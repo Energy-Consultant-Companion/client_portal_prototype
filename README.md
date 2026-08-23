@@ -39,6 +39,25 @@ auch *Demo zurücksetzen*.
 Kein Backend, keine Mails, kein Login. Mail-Momente sind Toasts; wo eine Mail
 einen Link enthielte, ist die Toast-Aktion dieser Link.
 
+## Die Beraterin-Oberfläche
+
+Drei Dinge in der Seitenleiste, die nicht bloß Dekoration sind:
+
+- **Suchen oder fragen (⌘K).** Ein Feld, zwei Aufgaben — deshalb trägt es im
+  Design die Kugel und keine Lupe. Ein Name sucht (Kundschaft, Anfragen,
+  Fristen, Unterlagen, Nachrichten), eine Frage wird beantwortet: *„Wer wartet
+  auf mich?"*, *„Was ist heute überfällig?"*, *„Welche Unterlagen fehlen?"*.
+  Beantwortet wird ausschließlich aus dem, was im Zustand liegt — sonst sagt es
+  das (`KEINE GRUNDLAGE IN DEN DATEN`), genau wie auf der Kundenseite.
+- **Seitenleiste einklappen.** Das Panel-Symbol oben rechts klappt die Leiste auf
+  68 px ein. Die Zählerstände bleiben als Punkte sichtbar — sie sind der Grund,
+  die Leiste offen zu halten, also darf das Einklappen sie nicht verschlucken.
+- **Einrichtung.** Vier Ablaufvorlagen mit eigenen Schritten. Schritte lassen
+  sich am Griff ziehen oder mit ↑ ↓ verschieben, Zuständigkeit per Dropdown
+  ändern, alle Texte direkt in der Tabelle bearbeiten; Schritte und Vorlagen
+  kommen und gehen. Der letzte Schritt einer Vorlage bleibt bestehen — eine
+  Vorlage ohne Schritte würde für keinen Fall etwas bedeuten.
+
 **Der Zustand liegt nur im Speicher.** Ein Reload führt immer zurück in den
 Ausgangszustand aus dem Design — eine Demo kann also nicht in einem halbfertigen
 Zwischenstand hängen bleiben.
@@ -50,8 +69,9 @@ src/
   styles/theme.css     Design-Tokens, wörtlich aus Paper (Tailwind-v4-@theme)
   motion/              Dauern, Easings, Varianten — eine Quelle für alle Screens
   store/               demo.ts (der Zustand + alle Aktionen), seed.ts (Design-Daten),
-                       ai.ts (was ENSERA selbst beantwortet und was nicht)
-  components/          primitives/ · chrome/ (Rail, Header, Toasts, Umschalter)
+                       ai.ts (was ENSERA der Kundschaft beantwortet und was nicht),
+                       search.ts (Suche und Praxis-Fragen der Beraterin)
+  components/          primitives/ · chrome/ (Rail, Header, Toasts, Palette, Umschalter)
   screens/client/      Landing · FirstInquiry · InquirySent · Intake · ClientPortal
   screens/ensera/      Inquiries · Clients · CaseDetail · Deadlines · Questions ·
                        Outbox · Setup
@@ -69,12 +89,14 @@ Zwei Dinge, die beim Lesen helfen:
 
 ```bash
 npm run typecheck
-node scripts/shoot.mjs   # jeden Screen bei 1440px nach /tmp/shots
-node scripts/walk.mjs    # läuft den kompletten Rundgang und prüft jeden Schritt
+node scripts/shoot.mjs     # jeden Screen bei 1440px nach /tmp/shots
+node scripts/walk.mjs      # der komplette Rundgang durch beide Rollen
+node scripts/settings.mjs  # Seitenleiste, Palette, Einrichtung
 ```
 
 `walk.mjs` ist der eigentliche Test: es klickt sich durch beide Rollen und prüft
-nach jedem Schritt, dass die andere Seite es sieht. Der Dev-Server muss laufen.
+nach jedem Schritt, dass die andere Seite es sieht. `settings.mjs` prüft die
+Beraterin-Oberfläche. Für beide muss der Dev-Server laufen.
 
 ## Deployment
 

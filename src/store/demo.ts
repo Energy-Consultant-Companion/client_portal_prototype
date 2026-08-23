@@ -9,9 +9,12 @@ import type {
   Deadline,
   Inquiry,
   Message,
+  Owner,
   Question,
   Slot,
   Toast,
+  WorkflowStep,
+  WorkflowTemplate,
 } from './types'
 
 /*
@@ -49,15 +52,22 @@ export interface DemoState {
   appointments: Appointment[]
   toasts: Toast[]
   autoAccept: boolean
+  templates: WorkflowTemplate[]
 
   /** Which inquiry the consultant is reading. */
   selectedInquiryId: string
   /** Which question the consultant is reading. */
   selectedQuestionId: string
+  /** Which workflow template is open in Einrichtung. */
+  selectedTemplateId: string
   /** Set once the client has finished the intake, so screens can reflect it. */
   intakeDone: boolean
   /** The inquiry the presenter just sent, if any — drives the confirmation page. */
   ownInquiryId: string | null
+  /** Rail collapsed to icons only. Lives here so it survives route changes. */
+  railCollapsed: boolean
+  /** ⌘K palette open. */
+  paletteOpen: boolean
 
   // ── Kundschaft → Beraterin
   submitInquiry(input: SubmittedInquiry): void
@@ -73,9 +83,22 @@ export interface DemoState {
   resolveDeadline(id: string): void
   setAutoAccept(on: boolean): void
 
+  // ── Einrichtung
+  selectTemplate(id: string): void
+  reorderSteps(templateId: string, steps: WorkflowStep[]): void
+  setStepOwner(templateId: string, stepId: string, owner: Owner): void
+  updateStep(templateId: string, stepId: string, patch: Partial<WorkflowStep>): void
+  addStep(templateId: string): void
+  removeStep(templateId: string, stepId: string): void
+  activateTemplate(id: string): void
+  regenerateTemplate(id: string): void
+  createTemplate(label: string): void
+
   // ── Chrome
   selectInquiry(id: string): void
   selectQuestion(id: string): void
+  toggleRail(): void
+  setPaletteOpen(open: boolean): void
   pushToast(toast: Omit<Toast, 'id'>): void
   dismissToast(id: string): void
   reset(): void
@@ -93,10 +116,14 @@ function initial() {
     appointments: structuredClone(seed.appointments),
     toasts: [] as Toast[],
     autoAccept: seed.autoAcceptDefault,
+    templates: structuredClone(seed.workflowTemplates),
     selectedInquiryId: 'sander',
     selectedQuestionId: 'q-fenster',
+    selectedTemplateId: 'ebw',
     intakeDone: false,
     ownInquiryId: null as string | null,
+    railCollapsed: false,
+    paletteOpen: false,
   }
 }
 
@@ -517,10 +544,122 @@ export const useDemo = create<DemoState>((set, get) => ({
     })
   },
 
+  // ───────────────────────────────────────────── Einrichtung
+
+  selectTemplate: (id) => set({ selectedTemplateId: id }),
+
+  /** Whole new order in one write — Reorder hands us the finished array. */
+  reorderSteps(templateId, steps) {
+    set((s) => ({
+      templates: s.templates.map((t) => (t.id === templateId ? { ...t, steps } : t)),
+    }))
+  },
+
+  setStepOwner(templateId, stepId, owner) {
+    get().updateStep(templateId, stepId, { owner })
+  },
+
+  updateStep(templateId, stepId, patch) {
+    set((s) => ({
+      templates: s.templates.map((t) =>
+        t.id === templateId
+          ? { ...t, steps: t.steps.map((st) => (st.id === stepId ? { ...st, ...patch } : st)) }
+          : t,
+      ),
+    }))
+  },
+
+  addStep(templateId) {
+    set((s) => ({
+      templates: s.templates.map((t) =>
+        t.id === templateId
+          ? { ...t, steps: [...t.steps, { id: uid('step'), ...seed.newStepDefaults }] }
+          : t,
+      ),
+    }))
+  },
+
+  removeStep(templateId, stepId) {
+    const t = get().templates.find((x) => x.id === templateId)
+    // A workflow with no steps isn't a workflow; refuse rather than allow it.
+    if (!t || t.steps.length <= 1) {
+      get().pushToast({
+        kind: 'plain',
+        title: 'Der letzte Schritt bleibt.',
+        detail: 'Eine Vorlage ohne Schritte würde für keinen Fall etwas bedeuten.',
+      })
+      return
+    }
+    set((s) => ({
+      templates: s.templates.map((x) =>
+        x.id === templateId ? { ...x, steps: x.steps.filter((st) => st.id !== stepId) } : x,
+      ),
+    }))
+  },
+
+  activateTemplate(id) {
+    const t = get().templates.find((x) => x.id === id)
+    if (!t) return
+    set((s) => ({
+      templates: s.templates.map((x) => (x.id === id ? { ...x, draft: false } : x)),
+    }))
+    get().pushToast({
+      kind: 'plain',
+      title: t.draft ? `${t.label} ist aktiv.` : `${t.label} ist gespeichert.`,
+      detail: t.caseCount
+        ? `Gilt für neue Fälle. Die ${t.caseCount} laufenden behalten ihre Version.`
+        : 'Gilt ab dem nächsten Fall.',
+    })
+  },
+
+  regenerateTemplate(id) {
+    const fresh = seed.workflowTemplates.find((t) => t.id === id)
+    if (!fresh) {
+      get().pushToast({
+        kind: 'plain',
+        title: 'Dafür gibt es kein Regelwerk.',
+        detail: 'Diese Vorlage haben Sie selbst angelegt — ich kann sie nicht neu ableiten.',
+      })
+      return
+    }
+    set((s) => ({
+      templates: s.templates.map((t) =>
+        t.id === id ? { ...structuredClone(fresh), draft: t.draft, caseCount: t.caseCount } : t,
+      ),
+    }))
+    get().pushToast({
+      kind: 'plain',
+      title: 'Neu aus dem Regelwerk erzeugt.',
+      detail: 'Ihre Änderungen an dieser Vorlage sind damit überschrieben.',
+    })
+  },
+
+  createTemplate(label) {
+    const id = uid('tpl')
+    set((s) => ({
+      templates: [
+        ...s.templates,
+        {
+          id,
+          label: label.trim() || 'Neue Vorlage',
+          caseCount: 0,
+          draft: true,
+          ruleVersion: 'ENTWURF · NOCH KEIN REGELSTAND',
+          derivedFrom:
+            'Diese Vorlage haben Sie selbst angelegt — ich habe nichts abgeleitet und tue nichts, solange kein Schritt mir etwas zuweist.',
+          steps: [{ id: uid('step'), ...seed.newStepDefaults }],
+        },
+      ],
+      selectedTemplateId: id,
+    }))
+  },
+
   // ───────────────────────────────────────────── Chrome
 
   selectInquiry: (id) => set({ selectedInquiryId: id }),
   selectQuestion: (id) => set({ selectedQuestionId: id }),
+  toggleRail: () => set((s) => ({ railCollapsed: !s.railCollapsed })),
+  setPaletteOpen: (open) => set({ paletteOpen: open }),
 
   pushToast(toast) {
     const id = uid('t')

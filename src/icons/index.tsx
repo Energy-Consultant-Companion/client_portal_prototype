@@ -77,14 +77,30 @@ export const HelpIcon = (p: IconProps) => (
   </Icon>
 )
 
-/** Tools · Einrichtung. */
+/**
+ * Tools · Einrichtung.
+ *
+ * The design drew this as a circle with radiating spokes, which reads as
+ * brightness rather than settings. A toothed gear says „hier wird eingestellt"
+ * without a caption — same weight and 16px box as the rest of the set.
+ */
 export const SettingsIcon = (p: IconProps) => (
   <Icon {...p}>
-    <circle cx="8" cy="8" r="3" />
+    <circle cx="8" cy="8" r="2.4" />
     <path
-      d="M8 1.4v1.8M8 12.8v1.8M1.4 8h1.8M12.8 8h1.8M3.4 3.4l1.3 1.3M11.3 11.3l1.3 1.3M12.6 3.4l-1.3 1.3M4.7 11.3l-1.3 1.3"
-      strokeLinecap="round"
+      d="M8 1.5l1 1.6a5.6 5.6 0 011.6.7l1.8-.4.9 1.6-1.2 1.4a5.6 5.6 0 010 1.8l1.2 1.4-.9 1.6-1.8-.4a5.6 5.6 0 01-1.6.7L8 14.5l-1-1.6a5.6 5.6 0 01-1.6-.7l-1.8.4-.9-1.6 1.2-1.4a5.6 5.6 0 010-1.8L2.7 5.4l.9-1.6 1.8.4a5.6 5.6 0 011.6-.7z"
+      strokeLinejoin="round"
     />
+  </Icon>
+)
+
+/** Tools · a plain sliders glyph, for the second settings entry in the row. */
+export const SlidersIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" strokeLinecap="round" />
+    <circle cx="6" cy="4.5" r="1.5" fill="var(--color-surface-sunken)" />
+    <circle cx="10.5" cy="8" r="1.5" fill="var(--color-surface-sunken)" />
+    <circle cx="5" cy="11.5" r="1.5" fill="var(--color-surface-sunken)" />
   </Icon>
 )
 
@@ -96,11 +112,33 @@ export const CompassIcon = (p: IconProps) => (
   </Icon>
 )
 
-/** Rail header · collapse the panel. */
-export const PanelIcon = (p: IconProps) => (
+/**
+ * Rail header · collapse the panel. The divider slides to the far side when
+ * collapsed, so the icon states which way the click will go.
+ */
+export const PanelIcon = ({ collapsed = false, ...p }: IconProps & { collapsed?: boolean }) => (
   <Icon {...p}>
     <rect x="1.5" y="2.5" width="13" height="11" rx="2" />
-    <path d="M10 2.5v11" />
+    <path d={collapsed ? 'M6 2.5v11' : 'M10 2.5v11'} />
+  </Icon>
+)
+
+export const PlusIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M8 3v10M3 8h10" strokeLinecap="round" />
+  </Icon>
+)
+
+export const TrashIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M2.5 4.5h11M6 4.5V3h4v1.5M4 4.5l.7 8.2a1 1 0 001 .8h4.6a1 1 0 001-.8l.7-8.2" strokeLinejoin="round" />
+  </Icon>
+)
+
+/** Einrichtung · nudge a step up or down without dragging. */
+export const CaretIcon = ({ up = false, ...p }: IconProps & { up?: boolean }) => (
+  <Icon {...p}>
+    <path d={up ? 'M4 9.5L8 5.5l4 4' : 'M4 6.5L8 10.5l4-4'} strokeLinecap="round" strokeLinejoin="round" />
   </Icon>
 )
 

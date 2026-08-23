@@ -1,5 +1,6 @@
 import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
+import { CommandPalette } from '@/components/chrome/CommandPalette'
 import { EnseraRail } from '@/components/chrome/EnseraRail'
 import { PersonaSwitcher } from '@/components/chrome/PersonaSwitcher'
 import { Toasts } from '@/components/chrome/Toasts'
@@ -31,6 +32,7 @@ function EnseraShell() {
       <main className="min-w-0 flex-1">
         <Outlet />
       </main>
+      <CommandPalette />
     </div>
   )
 }
