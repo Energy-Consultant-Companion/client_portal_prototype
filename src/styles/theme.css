@@ -1,0 +1,153 @@
+@import 'tailwindcss';
+
+/*
+ * Design tokens — copied verbatim from the Paper file "Ensera".
+ * The design was authored in Tailwind v4 @theme format, so these map 1:1 to
+ * utilities: bg-surface-sunken, text-fg-muted, text-2xs, rounded-xl, p-lg, …
+ * Do not invent values here. If a screen needs a value that isn't a token,
+ * that is a signal to check the artboard with get_computed_styles first.
+ */
+@theme {
+  /* Surfaces */
+  --color-canvas: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-sunken: #f4f6f8;
+  --color-surface-raised: #ffffff;
+  --color-surface-inverse: #0b0d10;
+  --color-surface-inverse-raised: rgb(255 255 255 / 8%);
+  --color-surface-inverse-active: rgb(255 255 255 / 14%);
+
+  /* Foreground */
+  --color-fg: #12161b;
+  --color-fg-muted: #5d6773;
+  --color-fg-subtle: #79838f;
+  --color-fg-inverse: #ffffff;
+  --color-fg-inverse-muted: #a6aeb7;
+
+  /* Borders */
+  --color-border: #e4e8ec;
+  --color-border-subtle: #eef1f4;
+  --color-border-strong: #c9d0d8;
+  --color-border-inverse: rgb(255 255 255 / 14%);
+  --color-border-inverse-strong: rgb(255 255 255 / 22%);
+
+  /* Evidence / provenance surfaces */
+  --color-blueprint-line: #e9edf2;
+  --color-evidence: #5d6773;
+  --color-evidence-surface: #f4f6f8;
+  --color-metal-base: #0b0d10;
+
+  /* Brand */
+  --color-brand: #1f46d8;
+  --color-brand-hover: #1a3bb8;
+  --color-brand-surface: #eef1fe;
+  --color-brand-border: #c3cefa;
+  --color-brand-fg: #ffffff;
+  --color-brand-inverse: #8ca0f5;
+
+  /* Feedback */
+  --color-feedback-error: #b3311e;
+  --color-feedback-error-surface: #fbeae7;
+  --color-feedback-error-border: #efc6be;
+  --color-feedback-warning-inverse: #e4816d;
+  --color-feedback-success: var(--color-fg-muted);
+
+  /* Severity of a rule finding */
+  --color-severity-blockierend: var(--color-feedback-error);
+  --color-severity-blockierend-surface: var(--color-feedback-error-surface);
+  --color-severity-inkonsistent: var(--color-fg);
+  --color-severity-hinweis: var(--color-fg-muted);
+  --color-severity-erfuellt: var(--color-fg-subtle);
+
+  /* Case phase state */
+  --color-phase-done: var(--color-fg);
+  --color-phase-current: var(--color-brand);
+  --color-phase-todo: var(--color-border-strong);
+
+  /* How much the agent was allowed to do on its own */
+  --color-delegation-l0: var(--color-border-strong);
+  --color-delegation-l1: #8ca0f5;
+  --color-delegation-l2: #4f6ee3;
+  --color-delegation-l3: var(--color-brand);
+  --color-delegation-capped: var(--color-fg-subtle);
+
+  /* Who wrote a given piece of text */
+  --color-provenance-agent: var(--color-brand);
+  --color-provenance-human: var(--color-fg);
+  --color-provenance-reused: var(--color-fg-muted);
+
+  /* Document read state */
+  --color-ocr-ok: var(--color-fg);
+  --color-ocr-pending: var(--color-fg-subtle);
+  --color-ocr-manual: var(--color-feedback-error);
+
+  /* Type */
+  --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+  --font-display: 'Inter Tight Variable', 'Inter Tight', Inter, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+  --font-serif: 'Instrument Serif', 'Times New Roman', serif;
+
+  --text-2xs: 11px;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+  --text-3xl: 38px;
+  --text-4xl: 48px;
+  --text-5xl: 64px;
+  --text-6xl: 80px;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --tracking-tighter: -0.03em;
+  --tracking-tight: -0.015em;
+  --tracking-mono: -0.01em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.02em;
+  --tracking-wordmark: 0.04em;
+  --tracking-caps: 0.08em;
+
+  --leading-display: 98%;
+  --leading-none: 100%;
+  --leading-tight: 115%;
+  --leading-snug: 130%;
+  --leading-normal: 150%;
+  --leading-relaxed: 165%;
+
+  /* Layout */
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1600px;
+
+  --container-rail: 264px;
+  --container-panel: 420px;
+  --container-reading: 720px;
+  --container-app: 1440px;
+
+  --spacing-3xs: 2px;
+  --spacing-2xs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  --spacing-4xl: 96px;
+
+  --radius-none: 0px;
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 18px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
+}
