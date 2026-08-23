@@ -5,8 +5,10 @@ import type {
   Deadline,
   Inquiry,
   Message,
+  Owner,
   Question,
   Slot,
+  WorkflowTemplate,
 } from './types'
 
 /*
@@ -166,6 +168,7 @@ export const clients: Client[] = [
     lastContact: 'heute, 08:41',
     owner: 'sie',
     ownerNote: 'BAFA-RÜCKFRAGE',
+    ownerTask: 'Rückfrage der BAFA',
     nextDeadline: { date: '08.08. überfällig', label: 'Antwort an die BAFA', overdue: true },
   },
   {
@@ -200,6 +203,7 @@ export const clients: Client[] = [
     lastContact: 'gestern, 16:20',
     owner: 'sie',
     ownerNote: 'ANTRAG PRÜFEN',
+    ownerTask: 'Förderantrag prüfen',
     nextDeadline: { date: '18.08.', label: 'Förderantrag KfW 458' },
   },
   {
@@ -212,6 +216,7 @@ export const clients: Client[] = [
     lastContact: 'vor 6 Tagen',
     owner: 'niemand',
     ownerNote: 'LÄUFT',
+    ownerTask: 'läuft ohne uns',
     nextDeadline: { date: '16.09.', label: 'Ergebnisgespräch' },
   },
 ]
@@ -681,63 +686,208 @@ export const appointments: Appointment[] = []
 
 // ─────────────────────────────────────────────────────────────── Einrichtung
 
-export const workflowTemplates = [
-  { id: 'ebw', label: 'BAFA EBW · iSFP', count: '8 FÄLLE', active: true },
-  { id: 'kfw', label: 'KfW 458 · Heizungstausch', count: '3' },
-  { id: 'beg', label: 'BEG EM · Einzelmaßnahme', count: '1' },
-  { id: 'foerder', label: 'Fördermittelbegleitung · Entwurf', draft: true },
+export const workflowTemplates: WorkflowTemplate[] = [
+  {
+    id: 'ebw',
+    label: 'BAFA EBW · iSFP',
+    caseCount: 8,
+    draft: false,
+    ruleVersion: 'BAFA EBW, STAND 2026-01',
+    derivedFrom:
+      'Ich habe sechs Schritte, neun Unterlagen und drei Fristen aus dem Programm abgeleitet. Prüfen Sie es — nichts davon läuft, bevor Sie die Vorlage aktivieren.',
+    steps: [
+      {
+        id: 'ebw-1',
+        title: 'Anfrage und Vorauswahl',
+        owner: 'kundschaft',
+        duration: '1 Tag',
+        clientSees: 'Ihre Anfrage ist angekommen',
+        enseraDoes: 'Gegen Ihre sechs Regeln prüfen',
+      },
+      {
+        id: 'ebw-2',
+        title: 'Erstgespräch und Beauftragung',
+        owner: 'gemeinsam',
+        duration: '1 Woche',
+        clientSees: 'Termin steht · Vertrag prüfen',
+        enseraDoes: 'Vertrag und Vollmacht anfordern, Signatur nachfassen',
+      },
+      {
+        id: 'ebw-3',
+        title: 'Unterlagen',
+        owner: 'kundschaft',
+        duration: '2 Wochen',
+        clientSees: 'Unterlagen zusammentragen',
+        enseraDoes: '9 Stück anfordern, nach 4 / 9 / 14 Tagen nachfassen',
+      },
+      {
+        id: 'ebw-4',
+        title: 'Vor-Ort-Termin und Aufmaß',
+        owner: 'gemeinsam',
+        duration: '1 Tag',
+        clientSees: 'Vor-Ort-Termin am ...',
+        enseraDoes: 'Erinnerung 2 Tage vorher, Frageliste vorbereiten',
+      },
+      {
+        id: 'ebw-5',
+        title: 'Berechnung und Fahrplan',
+        owner: 'sie',
+        duration: '3 Wochen',
+        clientSees: 'Frau Held rechnet · bis ...',
+        enseraDoes: 'Wochenstand schreiben, ohne dass Sie etwas tun',
+      },
+      {
+        id: 'ebw-6',
+        title: 'Ergebnisgespräch und Antrag',
+        owner: 'gemeinsam',
+        duration: '1 Woche',
+        clientSees: 'Gespräch, dann Förderantrag',
+        enseraDoes: 'Vorhabenbeginn prüfen, Fristen setzen',
+      },
+    ],
+  },
+  {
+    id: 'kfw',
+    label: 'KfW 458 · Heizungstausch',
+    caseCount: 3,
+    draft: false,
+    ruleVersion: 'KfW 458, STAND 2026-01',
+    derivedFrom:
+      'Fünf Schritte, sieben Unterlagen, zwei harte Fristen. Der Antrag muss vor dem ersten Handwerkertermin raus — das habe ich als blockierende Regel eingetragen.',
+    steps: [
+      {
+        id: 'kfw-1',
+        title: 'Anfrage und Vorauswahl',
+        owner: 'kundschaft',
+        duration: '1 Tag',
+        clientSees: 'Ihre Anfrage ist angekommen',
+        enseraDoes: 'Heizungsart und Baujahr gegen die Förderfähigkeit prüfen',
+      },
+      {
+        id: 'kfw-2',
+        title: 'Heizlast und Angebote',
+        owner: 'gemeinsam',
+        duration: '2 Wochen',
+        clientSees: 'Angebote einholen · noch nicht beauftragen',
+        enseraDoes: 'Heizlast nach DIN 12831 rechnen, Angebote gegenlesen',
+      },
+      {
+        id: 'kfw-3',
+        title: 'Förderantrag',
+        owner: 'sie',
+        duration: '1 Woche',
+        clientSees: 'Antrag liegt bei der KfW',
+        enseraDoes: 'Vorhabenbeginn sperren, bis der Antrag eingegangen ist',
+      },
+      {
+        id: 'kfw-4',
+        title: 'Einbau und Abgleich',
+        owner: 'kundschaft',
+        duration: '6 Wochen',
+        clientSees: 'Einbau läuft · Termine beim Handwerk',
+        enseraDoes: 'Hydraulischen Abgleich einfordern, Fotos anfordern',
+      },
+      {
+        id: 'kfw-5',
+        title: 'Verwendungsnachweis',
+        owner: 'sie',
+        duration: '2 Wochen',
+        clientSees: 'Nachweis ist raus',
+        enseraDoes: 'Rechnungen sammeln, Frist überwachen',
+      },
+    ],
+  },
+  {
+    id: 'beg',
+    label: 'BEG EM · Einzelmaßnahme',
+    caseCount: 1,
+    draft: false,
+    ruleVersion: 'BEG EM, STAND 2025-07',
+    derivedFrom:
+      'Vier Schritte. Ohne Sanierungsfahrplan fehlen fünf Prozentpunkte Zuschuss — ich weise beim Erstgespräch darauf hin.',
+    steps: [
+      {
+        id: 'beg-1',
+        title: 'Anfrage und Vorauswahl',
+        owner: 'kundschaft',
+        duration: '1 Tag',
+        clientSees: 'Ihre Anfrage ist angekommen',
+        enseraDoes: 'Maßnahme gegen die Förderliste prüfen',
+      },
+      {
+        id: 'beg-2',
+        title: 'Bestätigung zum Antrag',
+        owner: 'sie',
+        duration: '1 Woche',
+        clientSees: 'Bestätigung ist ausgestellt',
+        enseraDoes: 'BzA erzeugen, Fristen setzen',
+      },
+      {
+        id: 'beg-3',
+        title: 'Umsetzung',
+        owner: 'kundschaft',
+        duration: '8 Wochen',
+        clientSees: 'Umsetzung läuft',
+        enseraDoes: 'Alle vier Wochen nachfassen, Belege einsammeln',
+      },
+      {
+        id: 'beg-4',
+        title: 'Nachweis und Auszahlung',
+        owner: 'sie',
+        duration: '2 Wochen',
+        clientSees: 'Nachweis ist raus',
+        enseraDoes: 'BnD erstellen, Auszahlung verfolgen',
+      },
+    ],
+  },
+  {
+    id: 'foerder',
+    label: 'Fördermittelbegleitung',
+    caseCount: 0,
+    draft: true,
+    ruleVersion: 'ENTWURF · NOCH KEIN REGELSTAND',
+    derivedFrom:
+      'Diesen Entwurf habe ich aus Ihren letzten vier Begleitungen abgeleitet, nicht aus einem Regelwerk. Bitte lesen Sie ihn genauer als die anderen.',
+    steps: [
+      {
+        id: 'foerder-1',
+        title: 'Antragsprüfung',
+        owner: 'sie',
+        duration: '3 Tage',
+        clientSees: 'Ihre Unterlagen werden geprüft',
+        enseraDoes: 'Vollständigkeit prüfen, fehlende Stücke einzeln anfordern',
+      },
+      {
+        id: 'foerder-2',
+        title: 'Einreichung',
+        owner: 'sie',
+        duration: '1 Woche',
+        clientSees: 'Antrag ist eingereicht',
+        enseraDoes: 'Eingangsbestätigung ablegen, Frist im Kalender setzen',
+      },
+      {
+        id: 'foerder-3',
+        title: 'Rückfragen der Behörde',
+        owner: 'gemeinsam',
+        duration: 'offen',
+        clientSees: 'Es gibt eine Rückfrage',
+        enseraDoes: 'Antwort entwerfen, Ihnen zur Freigabe vorlegen',
+      },
+    ],
+  },
 ]
 
-export const workflowSteps = [
-  {
-    index: '01',
-    step: 'Anfrage und Vorauswahl',
-    owner: 'KUNDSCHAFT',
-    duration: '1 Tag',
-    clientSees: '„Ihre Anfrage ist angekommen"',
-    enseraDoes: 'Gegen Ihre sechs Regeln prüfen',
-  },
-  {
-    index: '02',
-    step: 'Erstgespräch und Beauftragung',
-    owner: 'GEMEINSAM',
-    duration: '1 Woche',
-    clientSees: '„Termin steht · Vertrag prüfen"',
-    enseraDoes: 'Vertrag und Vollmacht anfordern, Signatur nachfassen',
-  },
-  {
-    index: '03',
-    step: 'Unterlagen',
-    owner: 'KUNDSCHAFT',
-    duration: '2 Wochen',
-    clientSees: '„Unterlagen zusammentragen"',
-    enseraDoes: '9 Stück anfordern, nach 4 / 9 / 14 Tagen nachfassen',
-  },
-  {
-    index: '04',
-    step: 'Vor-Ort-Termin und Aufmaß',
-    owner: 'GEMEINSAM',
-    duration: '1 Tag',
-    clientSees: '„Vor-Ort-Termin am ..."',
-    enseraDoes: 'Erinnerung 2 Tage vorher, Frageliste vorbereiten',
-  },
-  {
-    index: '05',
-    step: 'Berechnung und Fahrplan',
-    owner: 'SIE',
-    duration: '3 Wochen',
-    clientSees: '„Frau Held rechnet · bis ..."',
-    enseraDoes: 'Wochenstand schreiben, ohne dass Sie etwas tun',
-  },
-  {
-    index: '06',
-    step: 'Ergebnisgespräch und Antrag',
-    owner: 'GEMEINSAM',
-    duration: '1 Woche',
-    clientSees: '„Gespräch, dann Förderantrag"',
-    enseraDoes: 'Vorhabenbeginn prüfen, Fristen setzen',
-  },
-]
+/** Owner options in the „Wer ist dran" dropdown, in the design's order. */
+export const ownerOptions: Owner[] = ['kundschaft', 'gemeinsam', 'sie', 'niemand']
+
+/** Offered when she adds a step, so the demo doesn't need typing to be legible. */
+export const newStepDefaults = {
+  title: 'Neuer Schritt',
+  owner: 'sie' as Owner,
+  duration: '1 Woche',
+  clientSees: 'Wird noch festgelegt',
+  enseraDoes: 'Nichts — bis Sie es hier eintragen',
+}
 
 // ─────────────────────────────────────────────────────── Anfrage-Formular
 

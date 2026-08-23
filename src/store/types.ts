@@ -123,7 +123,13 @@ export interface Client {
   lastContact: string
   lastContactStale?: boolean
   owner: Owner
+  /** Mono-caps tag for the table: „BAFA-RÜCKFRAGE". */
   ownerNote?: string
+  /**
+   * The same thing in prose, for sentences — „eine Rückfrage der BAFA".
+   * Two registers, two strings: lowercasing the tag would mangle the acronyms.
+   */
+  ownerTask?: string
   nextDeadline: { date: string; label: string; overdue?: boolean }
 }
 
@@ -219,6 +225,38 @@ export interface Appointment {
   day: string
   start: string
   kind: string
+}
+
+/*
+ * Ablaufvorlagen — the settings that decide how every case behaves.
+ *
+ * A template is the one place where the consultant sets what the agent may do
+ * in her name, so each step carries both halves of that bargain: what the
+ * client is told, and what ENSERA does unasked.
+ */
+export interface WorkflowStep {
+  id: string
+  title: string
+  owner: Owner
+  duration: string
+  /** „Ihre Anfrage ist angekommen" — quoted, because the client reads it verbatim. */
+  clientSees: string
+  enseraDoes: string
+}
+
+export interface WorkflowTemplate {
+  id: string
+  /** „BAFA EBW · iSFP" */
+  label: string
+  /** How many live cases run on it. Draft templates have none. */
+  caseCount: number
+  /** Not yet activated — nothing runs on it. */
+  draft: boolean
+  /** Frozen rule version the steps were derived from. */
+  ruleVersion: string
+  /** The agent's account of what it derived, shown in the dark banner. */
+  derivedFrom: string
+  steps: WorkflowStep[]
 }
 
 export interface Toast {
