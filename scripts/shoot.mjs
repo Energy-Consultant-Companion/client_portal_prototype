@@ -50,7 +50,7 @@ for (const route of routes) {
   // Let entrance animations and the shader settle before capturing.
   await page.waitForTimeout(1400)
   const name = route === '/' ? 'landing' : route.replace(/^\//, '').replace(/\//g, '-')
-  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true })
+  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true, animations: 'disabled' })
   console.log(`${name.padEnd(26)} ${problems.length ? `⚠ ${problems.join(' | ')}` : 'ok'}`)
 }
 
