@@ -100,10 +100,27 @@ Beraterin-Oberfläche. Für beide muss der Dev-Server laufen.
 
 ## Deployment
 
-GitHub Actions baut nach `main` und veröffentlicht auf GitHub Pages
-(`.github/workflows/deploy.yml`, Base-Pfad `/client_portal_prototype/`).
+GitHub Actions baut jeden Push auf `main` und veröffentlicht auf GitHub Pages
+(`.github/workflows/deploy.yml`). Der Base-Pfad ist `/client_portal_prototype/`,
+`404.html` ist die SPA-Weiche für Deeplinks. Der Workflow schaltet Pages selbst
+ein (`enablement: true`) — in den Einstellungen ist nichts zu klicken.
 
-> Hinweis: Dieses Repository ist privat. GitHub Pages aus privaten Repos
-> erfordert GitHub Team oder Enterprise. Zum Veröffentlichen also entweder den
-> Org-Plan anheben oder das Repository öffentlich schalten — der Workflow selbst
-> stimmt in beiden Fällen.
+**Es fehlt genau eine Sache:** Pages ist für dieses Repository nicht verfügbar.
+Das Repo ist privat und die Organisation liegt auf dem Free-Plan; Pages aus
+privaten Repos gibt es erst ab GitHub Team. Der Workflow läuft deshalb bis
+`configure-pages` durch und bricht dort ab — der Build selbst ist grün.
+
+Zwei Wege, und sie unterscheiden sich nur darin, was öffentlich wird:
+
+| | Code | Seite | Kosten |
+|---|---|---|---|
+| Repo öffentlich schalten | öffentlich | öffentlich | keine |
+| Org auf GitHub Team | privat | öffentlich | pro Mitglied und Monat |
+
+In beiden Fällen ist die **Seite öffentlich erreichbar** — eine zugriffsbeschränkte
+Pages-Seite gibt es nur mit Enterprise Cloud. Die Daten im Prototyp sind erfunden,
+insofern ist das unkritisch; nur wissen sollte man es.
+
+Danach genügt ein Push auf `main` oder *Actions → Deploy prototype to GitHub Pages
+→ Run workflow*. Die Seite liegt dann unter
+`https://energy-consultant-companion.github.io/client_portal_prototype/`.
