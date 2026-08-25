@@ -4,62 +4,74 @@ import { seed } from '@/store/demo'
 import { listVariants, rowVariants, transition } from '@/motion/tokens'
 import { Eyebrow } from '@/components/primitives'
 import { HeldFooter } from '@/components/chrome/HeldHeader'
+import { Orb } from '@/components/chrome/Orb'
 import { ArrowRightIcon } from '@/icons'
 import hero from '@/assets/hero.jpg'
 
 /*
- * Landing — condensed on purpose.
+ * Landing — a stand-in, and it says so.
  *
- * In the design this page runs six sections deep, but it is the least important
- * screen here: a consultant would plausibly keep their own site. What it has to
- * do is establish the voice (plain, blunt, priced up front) and hand the visitor
- * to the inquiry. So we keep the hero, the three services, and the honest
- * disclaimer about what she doesn't do — and stop there.
+ * This page is not the product. A consultant almost certainly already has a
+ * website, and ENSERA has no business replacing it: the only thing it needs is
+ * one link. So rather than pretending to be a marketing page, the page explains
+ * that it is a placeholder and shows exactly where the handover happens.
+ *
+ * That framing is also why there are no prices here. What a consultant charges
+ * is their business, and putting numbers in a prototype invites a conversation
+ * about the wrong thing.
  */
 
-const services = [
+const handover = [
   {
-    tag: 'BAFA EBW · MEISTGEWÄHLT',
-    title: 'Sanierungsfahrplan',
+    tag: 'BLEIBT WIE ES IST',
+    title: 'Ihre Website',
     body:
-      'Ich sehe mir Ihr Haus an und schreibe auf, in welcher Reihenfolge sich was rechnet — mit Kosten, Einsparung und Förderung pro Schritt.',
-    price: '390 €',
-    priceNote: 'Ihr Anteil nach Förderung',
+      'Was Sie heute haben, bleibt. Ihre Texte, Ihre Preise, Ihre Fotos — daran ändert ENSERA nichts und will es auch nicht.',
   },
   {
-    tag: 'BEG EM · KFW 458',
-    title: 'Fördermittelbegleitung',
+    tag: 'DAS EINZIGE, WAS DAZUKOMMT',
+    title: 'Ein Link',
     body:
-      'Antrag, Bestätigung, Verwendungsnachweis. Ich reiche ein, halte die Fristen und rede mit BAFA und KfW. Sie unterschreiben nur.',
-    price: 'ab 640 €',
-    priceNote: 'je Maßnahme',
+      'Ein Knopf „Anfrage erstellen", der auf Ihren Bereich zeigt. Mehr Einbau ist es nicht — kein Plugin, kein Umzug, keine neue Adresse.',
   },
   {
-    tag: 'PFLICHT BEI WÄRMEPUMPE',
-    title: 'Heizlast und Abgleich',
+    tag: 'AB HIER ÜBERNEHMEN WIR',
+    title: 'Alles danach',
     body:
-      'Heizlastberechnung nach DIN 12831 und hydraulischer Abgleich. Ohne beides zahlt die KfW die Wärmepumpe nicht.',
-    price: 'ab 480 €',
-    priceNote: 'nach Aufwand',
+      'Anfrage prüfen, Zugang verschicken, Unterlagen einsammeln, Fristen halten, Fragen beantworten. Das ist der Teil, den Sie gerade selbst machen.',
   },
 ]
 
 export function Landing() {
   return (
     <div className="min-h-screen bg-surface">
+      {/* Says what this page is before anyone reads a word of it. */}
+      <div className="flex items-center justify-center gap-sm bg-surface-inverse px-lg py-[9px]">
+        <Orb size={16} />
+        <span className="label-caps text-fg-inverse-muted">
+          PROTOTYP · DIESE STARTSEITE STEHT FÜR <span className="text-fg-inverse">IHRE EIGENE WEBSITE</span> —
+          ALLES AB „ANFRAGE ERSTELLEN" IST ENSERA
+        </span>
+      </div>
+
       <section className="relative h-[882px] overflow-hidden bg-surface-inverse">
         <motion.img
           src={hero}
-          alt=""
+          alt="Wohngebiet aus der Luft, mit eingezeichneten Energiekennwerten"
           initial={{ scale: 1.06, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
           className="absolute inset-0 size-full object-cover"
         />
-        {/* Two veils: one to lift the nav off the image, one to seat the headline. */}
-        <div className="absolute inset-x-0 top-0 h-[200px] bg-gradient-to-b from-[rgba(11,13,16,0.6)] to-transparent" />
-        <div className="absolute inset-0 bg-[rgba(11,13,16,0.42)]" />
-        <div className="absolute inset-x-0 bottom-0 h-[340px] bg-gradient-to-t from-[rgba(11,13,16,0.68)] to-transparent" />
+        {/*
+         * This photograph is bright — sunlit sky top, a light HUD bottom right.
+         * White type needs the scrim built where the type actually sits, so:
+         * dark from the left for the headline column, dark from the bottom to
+         * seat the whole block, and a light touch on top for the nav.
+         */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[rgba(11,13,16,0.82)] via-[rgba(11,13,16,0.34)] to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-[420px] bg-gradient-to-t from-[rgba(11,13,16,0.78)] to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-[180px] bg-gradient-to-b from-[rgba(11,13,16,0.5)] to-transparent" />
 
         <nav className="relative flex h-[92px] items-center justify-between px-[80px]">
           <span className="flex items-center gap-[10px]">
@@ -82,7 +94,7 @@ export function Landing() {
             <Link
               to="/anfrage"
               className="rounded-full border border-[rgba(255,255,255,0.3)] px-md py-[9px] text-sm
-                         font-medium text-fg-inverse transition-colors hover:bg-[rgba(255,255,255,0.12)]"
+                         font-medium text-fg-inverse transition-colors hover:bg-[rgba(255,255,255,0.14)]"
             >
               Anfrage erstellen
             </Link>
@@ -106,7 +118,8 @@ export function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...transition.slow, delay: 0.28 }}
-            className="w-[540px] font-display text-[62px] font-semibold leading-[60px] tracking-tighter text-fg-inverse"
+            className="w-[540px] font-display text-[62px] font-semibold leading-[60px] tracking-tighter text-fg-inverse
+                       [text-shadow:0_1px_24px_rgba(11,13,16,0.35)]"
           >
             Ich sage Ihnen, was Ihr Haus braucht. Und was nicht.
           </motion.h1>
@@ -115,7 +128,7 @@ export function Landing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...transition.slow, delay: 0.36 }}
-            className="w-[560px] pt-lg text-md leading-[29px] text-[rgba(255,255,255,0.82)]"
+            className="w-[560px] pt-lg text-md leading-[29px] text-[rgba(255,255,255,0.88)]"
           >
             Sanierungsfahrplan, Förderantrag, Begleitung bis zum Bescheid. Und wenn sich etwas für
             Sie nicht rechnet, sage ich das, bevor Sie Geld ausgeben.
@@ -127,19 +140,21 @@ export function Landing() {
             transition={{ ...transition.slow, delay: 0.44 }}
             className="flex items-center gap-[20px] pt-[40px]"
           >
+            {/* The one element that belongs to ENSERA — hence the ring on it. */}
             <Link to="/anfrage">
               <motion.span
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 transition={transition.fast}
                 className="flex h-[52px] shrink-0 items-center gap-[10px] rounded-full bg-surface px-[26px]
-                           text-base font-semibold tracking-tight text-fg"
+                           text-base font-semibold tracking-tight text-fg
+                           ring-4 ring-[rgba(255,255,255,0.16)]"
               >
                 Anfrage erstellen
                 <ArrowRightIcon size={15} />
               </motion.span>
             </Link>
-            <span className="label-caps leading-[18px] text-[rgba(255,255,255,0.55)]">
+            <span className="label-caps leading-[18px] text-[rgba(255,255,255,0.62)]">
               DREI FRAGEN · ZWEI MINUTEN
               <br />
               ANTWORT VON MIR AM SELBEN WERKTAG
@@ -148,18 +163,23 @@ export function Landing() {
         </div>
       </section>
 
+      {/* Where the placeholder ends and the product begins. */}
       <section className="flex gap-[80px] px-[80px] py-[96px]">
         <div className="flex w-[200px] shrink-0 flex-col gap-sm">
-          <Eyebrow>01 — WAS SIE BEKOMMEN</Eyebrow>
+          <Eyebrow>01 — WAS ENSERA ÄNDERT</Eyebrow>
           <p className="text-sm leading-[21px] text-fg-muted">
-            Festpreise. Die Förderung ziehe ich vorher ab, nicht nachher.
+            Fast nichts. Und das ist der Punkt.
           </p>
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <h2 className="max-w-[660px] pb-2xl font-display text-3xl font-semibold leading-[44px] tracking-tight">
-            Drei Dinge. Mehr braucht Ihr Haus in der Regel nicht.
+          <h2 className="max-w-[700px] pb-md font-display text-3xl font-semibold leading-[44px] tracking-tight">
+            Diese Seite gehört Ihnen. Wir hängen nur einen Knopf daran.
           </h2>
+          <p className="max-w-[620px] pb-2xl text-md leading-[29px] text-fg-muted">
+            Oben sehen Sie eine gebaute Beispielseite — im Betrieb wäre das einfach Ihre eigene,
+            wie sie heute schon aussieht. ENSERA fängt erst hinter dem Knopf an.
+          </p>
 
           <motion.div
             variants={listVariants}
@@ -168,39 +188,44 @@ export function Landing() {
             viewport={{ once: true, margin: '-80px' }}
             className="grid grid-cols-3 gap-[40px]"
           >
-            {services.map((s) => (
+            {handover.map((s, i) => (
               <motion.article
                 key={s.title}
                 variants={rowVariants}
-                className="flex flex-col border-t-2 border-fg pt-md"
+                className={`flex flex-col border-t-2 pt-md ${
+                  // The third card is ENSERA's half of the bargain.
+                  i === 2 ? 'border-brand' : 'border-fg'
+                }`}
               >
-                <Eyebrow className="pb-sm">{s.tag}</Eyebrow>
+                <Eyebrow tone={i === 2 ? 'brand' : 'subtle'} className="pb-sm">
+                  {s.tag}
+                </Eyebrow>
                 <h3 className="pb-sm font-display text-lg font-semibold tracking-tight">{s.title}</h3>
-                <p className="pb-lg text-base leading-[24px] text-fg-muted">{s.body}</p>
-                <div className="mt-auto flex items-baseline gap-sm border-t border-border pt-sm">
-                  <span className="font-display text-lg font-semibold tracking-tight">{s.price}</span>
-                  <span className="text-sm text-fg-subtle">{s.priceNote}</span>
-                </div>
+                <p className="text-base leading-[24px] text-fg-muted">{s.body}</p>
               </motion.article>
             ))}
           </motion.div>
 
-          <div className="flex items-start gap-sm pt-2xl">
-            <span className="mt-[7px] size-[6px] shrink-0 rounded-full bg-feedback-error" />
-            <p className="max-w-[620px] text-[14px] leading-[22px] text-fg-muted">
-              Was ich nicht mache: Neubau, Gewerbe, Mehrfamilienhäuser, Denkmalschutz. Das merken Sie
-              schon in der Anfrage — und dann nenne ich Ihnen jemanden, der es macht.
-            </p>
-          </div>
         </div>
       </section>
 
       <section className="bg-surface-inverse px-[80px] py-[80px]">
         <div className="flex items-end justify-between gap-2xl">
-          <p className="max-w-[620px] font-display text-2xl font-semibold leading-[40px] tracking-tight text-fg-inverse">
-            Drei Fragen und ein Satz von Ihnen. Passt Ihr Haus nicht zu mir, sage ich das ehrlich und
-            nenne Ihnen jemanden, der es macht.
-          </p>
+          <div className="max-w-[620px]">
+            <p className="font-display text-2xl font-semibold leading-[40px] tracking-tight text-fg-inverse">
+              Drei Fragen und ein Satz von Ihnen. Passt Ihr Haus nicht zu mir, sage ich das ehrlich
+              und nenne Ihnen jemanden, der es macht.
+            </p>
+            {/* The concrete version of the sentence above — and the reason the
+                pre-check turns Frau Deibel away later in the demo. */}
+            <div className="flex items-start gap-sm pt-lg">
+              <span className="mt-[7px] size-[6px] shrink-0 rounded-full bg-feedback-warning-inverse" />
+              <p className="text-[14px] leading-[22px] text-fg-inverse-muted">
+                Was ich nicht mache: Neubau, Gewerbe, Mehrfamilienhäuser, Denkmalschutz. Das merken
+                Sie schon in der Anfrage.
+              </p>
+            </div>
+          </div>
           <Link
             to="/anfrage"
             className="group flex shrink-0 items-center gap-xs text-base font-medium text-brand-inverse"

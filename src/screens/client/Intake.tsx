@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useScroll, useSpring } from 'motion/react'
 import { useDemo, seed } from '@/store/demo'
@@ -11,7 +11,6 @@ import {
   Dot,
   Eyebrow,
   Field,
-  Segments,
   TextArea,
 } from '@/components/primitives'
 import { HeldHeader } from '@/components/chrome/HeldHeader'
@@ -19,15 +18,15 @@ import { CheckIcon, UploadIcon } from '@/icons'
 import type { Slot } from '@/store/types'
 
 /*
- * Aufnahme · Schritt 2 von 3.
+ * Aufnahme — die Details zum Haus.
  *
- * The long one. Six sections, and the design makes a promise about each: leave
- * blank what you don't know, and Frau Held will see that it needs clearing at
- * the appointment. So nothing is required, and the section rail marks progress
- * rather than validity.
+ * Six sections, and the design makes a promise about each: leave blank what you
+ * don't know, and Frau Held will see that it needs clearing at the appointment.
+ * So nothing here is required.
  *
- * The last section is the real payload: the slots come out of her calendar, and
- * picking one books it — no phone tag.
+ * The step counter and the section rail are gone on purpose — they advertised a
+ * structure the prototype doesn't need yet. The last section is the real
+ * payload: the slots come out of her calendar, and picking one books it.
  */
 export function Intake() {
   const navigate = useNavigate()
@@ -54,29 +53,6 @@ export function Intake() {
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 })
 
-  /*
-   * Which sections have content. Nothing here is required — the design promises
-   * you may leave gaps — so this marks how far you have worked, not validity.
-   */
-  const filled = useMemo(
-    () => ({
-      '01': Boolean(year && area && units && monument),
-      '02': Boolean(ownership),
-      '03': Boolean(heating && boilerYear),
-      '04': plans.length > 0,
-      '05': atHand.length > 0,
-      '06': Boolean(slotId && meetingKind),
-    }),
-    [year, area, units, monument, ownership, heating, boilerYear, plans, atHand, slotId, meetingKind],
-  )
-
-  // The section you're looking at is the current one; filled sections above it
-  // are ticked. That's what makes the rail read like the design's mid-form state.
-  const [visible, setVisible] = useState('01')
-  const done = Object.fromEntries(
-    seed.intakeSections.map((s) => [s.index, filled[s.index as keyof typeof filled] && s.index < visible]),
-  ) as Record<string, boolean>
-
   // Slots keep their design grouping (day header on each card).
   const grouped = slots
 
@@ -91,67 +67,30 @@ export function Intake() {
 
   return (
     <div className="min-h-screen bg-surface">
-      {/* The header and the step strip stay put: on a form this long, „Schritt 2
-          von 3" and the autosave clock are the two reassurances worth keeping. */}
+      {/* Only the hairline survives from the old step chrome: a reading of how
+          far down a long form you are, which is worth keeping. */}
       <div className="sticky top-0 z-30">
         <HeldHeader variant="saved" address={d.address} person={d.person} />
-
-        <div className="flex h-[54px] items-center gap-lg border-b border-border bg-surface-sunken px-2xl">
-          <Eyebrow>SCHRITT 2 VON 3 · AUFNAHME</Eyebrow>
-          <Segments total={3} current={2} width={176} />
-          <span className="flex-1" />
-          <span className="text-sm text-fg-muted">
-            Rund 8 Minuten · Sie können jederzeit aufhören und später weitermachen
-          </span>
-        </div>
-
-        {/* A hairline reading of scroll position — the form is long enough to earn it. */}
         <motion.div className="h-[2px] origin-left bg-brand" style={{ scaleX: progress }} />
       </div>
 
       <div>
-        <div className="flex gap-[80px] px-[80px] pt-[64px] pb-[96px]">
-          <aside className="sticky top-[196px] flex h-fit w-[220px] shrink-0 flex-col">
-            <Eyebrow className="pb-md">SECHS ABSCHNITTE</Eyebrow>
-            {seed.intakeSections.map((s) => {
-              const isDone = done[s.index]
-              const isCurrent = s.index === visible
-              return (
-                <a
-                  key={s.index}
-                  href={`#abschnitt-${s.index}`}
-                  className="flex items-center gap-sm border-b border-border-subtle py-sm last:border-0"
-                >
-                  <span className="numeric-mono w-[18px] shrink-0 text-2xs text-fg-subtle">
-                    {s.index}
-                  </span>
-                  <span
-                    className={`flex-1 text-base ${
-                      isDone || isCurrent ? 'font-medium text-fg' : 'text-fg-muted'
-                    }`}
-                  >
-                    {s.label}
-                  </span>
-                  <span className="flex size-[14px] shrink-0 items-center justify-center">
-                    {isCurrent && !isDone ? (
-                      <Dot state="brand" size={6} />
-                    ) : isDone ? (
-                      <span className="text-fg-subtle">
-                        <CheckIcon size={13} strokeWidth={1.6} />
-                      </span>
-                    ) : null}
-                  </span>
-                </a>
-              )
-            })}
-            <p className="border-t border-border pt-md text-sm leading-[21px] text-fg-subtle">
+        {/* 980px of content — the width the chip rows were built for, so none of
+            them wraps onto a second line. */}
+        <div className="mx-auto max-w-[1140px] px-[80px] pt-[56px] pb-[96px]">
+          <header className="pb-2xl">
+            <Eyebrow className="pb-sm">AUFNAHME</Eyebrow>
+            <h1 className="pb-sm font-display text-2xl font-semibold tracking-tight">
+              Jetzt die Details — in Ruhe.
+            </h1>
+            <p className="max-w-[620px] text-base leading-[24px] text-fg-muted">
               Was Sie nicht wissen, lassen Sie offen. Frau Held sieht dann, dass es beim Termin
               geklärt werden muss.
             </p>
-          </aside>
+          </header>
 
-          <div className="min-w-0 flex-1">
-            <Section onEnter={setVisible} index="01" title="Ihr Gebäude">
+          <div className="min-w-0">
+            <Section index="01" title="Ihr Gebäude">
               <div className="grid grid-cols-[1fr_1fr_1fr_1.4fr] gap-lg">
                 <Field label="BAUJAHR" value={year} onChange={setYear} />
                 <Field label="WOHNFLÄCHE" value={area} onChange={setArea} />
@@ -170,7 +109,6 @@ export function Intake() {
             </Section>
 
             <Section
-              onEnter={setVisible}
               index="02"
               title="Wem gehört das Haus?"
               hint="Gehört es mehreren, braucht der Förderantrag von allen eine Unterschrift. Das früh zu wissen erspart uns beiden Wochen."
@@ -215,7 +153,7 @@ export function Intake() {
               )}
             </Section>
 
-            <Section onEnter={setVisible} index="03" title="Ihre Heizung">
+            <Section index="03" title="Ihre Heizung">
               <ChipGroup
                 name="heating"
                 options={seed.intakeOptions.heating}
@@ -250,7 +188,6 @@ export function Intake() {
             </Section>
 
             <Section
-              onEnter={setVisible}
               index="04"
               title="Was Sie vorhaben"
               hint="Mehrfachauswahl. Was Sie hier auswählen, bestimmt, welches Förderprogramm für Sie in Frage kommt."
@@ -268,7 +205,6 @@ export function Intake() {
             </Section>
 
             <Section
-              onEnter={setVisible}
               index="05"
               title="Was liegt bei Ihnen schon herum?"
               hint="Nur ankreuzen, hochladen können Sie später. Was Sie hier nicht ankreuzen, fordern wir einzeln an — mit dem Hinweis, wo es zu finden ist."
@@ -296,7 +232,6 @@ export function Intake() {
             </Section>
 
             <Section
-              onEnter={setVisible}
               index="06"
               title="Ihr erstes Gespräch"
               hint="Rund 45 Minuten. Sie wählen, wie und wann — die Zeiten kommen direkt aus dem Kalender von Frau Held."
@@ -360,35 +295,23 @@ function Section({
   hint,
   children,
   last,
-  onEnter,
 }: {
   index: string
   title: string
   hint?: string
   children: React.ReactNode
   last?: boolean
-  onEnter?: (index: string) => void
 }) {
   return (
     <motion.section
-      id={`abschnitt-${index}`}
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
       transition={transition.base}
-      className={`relative scroll-mt-[148px] pb-[40px] ${last ? '' : 'border-b border-border'} ${
+      className={`pb-[40px] ${last ? '' : 'border-b border-border'} ${
         index === '01' ? '' : 'pt-[40px]'
       }`}
     >
-      {/* A sentinel just below the sticky header: whichever section's sentinel
-          is in the band is the one being read. Kept separate from the section's
-          own entrance animation, which fires once and never repeats. */}
-      <motion.span
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-full"
-        onViewportEnter={() => onEnter?.(index)}
-        viewport={{ margin: '-160px 0px -65% 0px' }}
-      />
       <div className="flex items-baseline gap-[14px] pb-md">
         <span className="numeric-mono w-6 shrink-0 text-xs text-fg-subtle">{index}</span>
         <h2 className="font-display text-lg font-semibold leading-[26px] tracking-tight">{title}</h2>

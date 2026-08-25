@@ -22,8 +22,18 @@ const failures = []
 page.on('pageerror', (e) => failures.push(`pageerror: ${e.message}`))
 
 let step = 0
+/*
+ * Screenshots are a convenience here, not an assertion. The agent orb is a
+ * shader that never stops animating, so a capture can occasionally fail to find
+ * a stable frame — that must not take the run down with it.
+ */
 async function shot(name) {
-  await page.screenshot({ path: `${OUT}/${String(++step).padStart(2, '0')}-${name}.png` })
+  const path = `${OUT}/${String(++step).padStart(2, '0')}-${name}.png`
+  try {
+    await page.screenshot({ path, animations: 'disabled', timeout: 8000 })
+  } catch {
+    console.log(`  (Screenshot ${name} übersprungen)`)
+  }
 }
 
 /** Wait for text to appear, rather than sampling mid-transition. */

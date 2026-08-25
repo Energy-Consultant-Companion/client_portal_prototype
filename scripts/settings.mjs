@@ -18,7 +18,10 @@ const failures = []
 page.on('pageerror', (e) => failures.push(`pageerror: ${e.message}`))
 
 let step = 0
-const shot = (n) => page.screenshot({ path: `${OUT}/${String(++step).padStart(2, '0')}-${n}.png` })
+const shot = (n) =>
+  page
+    .screenshot({ path: `${OUT}/${String(++step).padStart(2, '0')}-${n}.png`, animations: 'disabled', timeout: 8000 })
+    .catch(() => console.log(`  (Screenshot ${n} übersprungen)`))
 
 function check(label, ok) {
   console.log(`${ok ? '✓' : '✗'} ${label}`)

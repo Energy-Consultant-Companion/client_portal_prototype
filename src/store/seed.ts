@@ -949,12 +949,3 @@ export const intakeOptions = {
   ],
   meetingKind: ['Bei mir zu Hause', 'Telefon', 'Video', 'Im Büro in Peine'],
 }
-
-export const intakeSections = [
-  { index: '01', label: 'Ihr Gebäude' },
-  { index: '02', label: 'Wem gehört es' },
-  { index: '03', label: 'Ihre Heizung' },
-  { index: '04', label: 'Was Sie vorhaben' },
-  { index: '05', label: 'Was Sie schon haben' },
-  { index: '06', label: 'Ihr erster Termin' },
-]
