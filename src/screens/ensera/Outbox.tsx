@@ -73,12 +73,11 @@ export function Outbox() {
           <Eyebrow>NEUESTE ZUERST</Eyebrow>
         </div>
 
-        <div className="grid grid-cols-[230px_1fr_130px_120px_130px_16px] items-center gap-md pb-sm">
+        <div className="grid grid-cols-[230px_1fr_130px_120px_16px] items-center gap-md pb-sm">
           <Eyebrow>AN WEN</Eyebrow>
           <Eyebrow>WORUM ES GING</Eyebrow>
           <Eyebrow>GESCHRIEBEN VON</Eyebrow>
           <Eyebrow className="text-right">RAUS</Eyebrow>
-          <Eyebrow className="text-right">ANGEKOMMEN</Eyebrow>
           <span />
         </div>
         <Rule />
@@ -126,24 +125,39 @@ export function Outbox() {
 
 function Row({ message: m }: { message: Message }) {
   const undeliverable = m.delivery === 'unzustellbar'
-  const unopened = m.delivery === 'ungeoeffnet'
 
   return (
     <motion.button
       type="button"
       layout
       variants={m.isNew ? arrivalVariants : rowVariants}
-      className="group grid w-full grid-cols-[230px_1fr_130px_120px_130px_16px] items-center gap-md
+      className="group grid w-full grid-cols-[230px_1fr_130px_120px_16px] items-center gap-md
                  border-b border-border-subtle py-sm text-left transition-colors hover:bg-surface-sunken"
     >
       <span className="flex min-w-0 items-start gap-sm">
-        {/* Only the agent's messages get a marker. Hers are the default case,
-            and „nicht zustellbar" already speaks for itself on the right. */}
+        {/* Only the agent's messages get a marker — hers are the default case.
+            An undeliverable one takes the slot over: with no delivery column
+            left, this row is otherwise indistinguishable from a delivered one. */}
         <span className="mt-[7px] w-[5px] shrink-0">
-          {m.author === 'ensera' && <Dot state="brand" size={5} />}
+          {undeliverable ? (
+            <Dot state="fehlt" size={5} />
+          ) : (
+            m.author === 'ensera' && <Dot state="brand" size={5} />
+          )}
         </span>
         <span className="flex min-w-0 flex-col gap-[2px]">
-          <span className="truncate text-base font-medium leading-[20px] text-fg">{m.recipient}</span>
+          <span className="flex min-w-0 items-baseline gap-xs">
+            <span className="truncate text-base font-medium leading-[20px] text-fg">
+              {m.recipient}
+            </span>
+            {/* On the name line, not the detail one: the detail truncates, and a
+                delivery failure is the one thing here that must not. */}
+            {undeliverable && (
+              <span className="label-caps shrink-0 rounded-xs bg-feedback-error-surface px-[5px] py-[3px] text-feedback-error">
+                UNZUSTELLBAR
+              </span>
+            )}
+          </span>
           <span className="truncate text-sm text-fg-muted">{m.recipientDetail}</span>
         </span>
       </span>
@@ -155,14 +169,6 @@ function Row({ message: m }: { message: Message }) {
       </span>
 
       <span className="numeric-mono text-right text-sm text-fg-muted">{m.sent}</span>
-
-      <span
-        className={`numeric-mono text-right text-sm ${
-          undeliverable ? 'text-feedback-error' : unopened ? 'text-fg-subtle' : 'text-fg-muted'
-        }`}
-      >
-        {m.deliveryLabel}
-      </span>
 
       <span className="text-border-strong transition-colors group-hover:text-fg-muted">
         <ChevronRightIcon size={14} />

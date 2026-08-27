@@ -48,7 +48,6 @@ export const consultant = {
   initials: 'KH',
   practice: 'Energieberatung Held',
   registry: 'EEE · 184 992',
-  phone: '05171 · 40 22 88',
   office: 'Büro Wollenweberstr. 8, Peine',
 }
 
@@ -139,9 +138,6 @@ export const inquiries: Inquiry[] = [
     ],
   },
 ]
-
-/** Toggle in the Anfragen footer: off means every inquiry crosses her desk. */
-export const autoAcceptDefault = false
 
 // ─────────────────────────────────────────────────────────────── Kundschaft
 
@@ -394,7 +390,7 @@ export const questions: Question[] = [
     author: 'ensera',
     answer:
       'Am Mittwoch, 19. August um 10:00 Uhr bei Ihnen. Eingeplant sind rund zwei Stunden. Sie brauchen dafür Zugang zu Keller und Dachboden.',
-    provenance: 'ENSERA · SOFORT BEANTWORTET, OHNE FRAU HELD ZU STÖREN',
+    provenance: 'KI-ASSISTENT · SOFORT BEANTWORTET, OHNE FRAU HELD ZU STÖREN',
   },
   {
     id: 'q-waermepumpe',
@@ -490,6 +486,11 @@ export const answeredWithoutHer = 6
 
 // ─────────────────────────────────────────────────────────────── Fristen
 
+/*
+ * `detail` no longer carries the address: the screen prefixes each row with the
+ * name behind `caseId`, so who it concerns is read once, from one place, and a
+ * renamed client can never disagree with a deadline.
+ */
 export const deadlines: Deadline[] = [
   {
     id: 'd-bafa',
@@ -498,7 +499,7 @@ export const deadlines: Deadline[] = [
     qualifier: '2 TAGE ÜBER',
     overdue: true,
     title: 'Antwort an die BAFA freigeben',
-    detail: 'Lindenallee 3 · Rückfrage zur Heizlast, Entwurf liegt bereit',
+    detail: 'Rückfrage zur Heizlast, Entwurf liegt bereit',
     owner: 'sie',
     bucket: 'jetzt',
     action: 'Freigeben',
@@ -508,8 +509,8 @@ export const deadlines: Deadline[] = [
     caseId: 'brendel',
     when: 'heute 11:00',
     qualifier: 'IN 20 MINUTEN',
-    title: 'Rückruf Hans-Jürgen Brendel',
-    detail: 'Lindenallee 3 · hat gestern zweimal angerufen',
+    title: 'Rückruf',
+    detail: 'hat gestern zweimal angerufen',
     owner: 'sie',
     bucket: 'jetzt',
     action: 'Anrufen',
@@ -518,8 +519,8 @@ export const deadlines: Deadline[] = [
     id: 'd-reuter-docs',
     caseId: 'reuter',
     when: 'Fr 15.08.',
-    title: 'Unterlagen Reuter vollständig',
-    detail: 'Buchenweg 14 · 2 von 9 fehlen',
+    title: 'Unterlagen vollständig',
+    detail: '2 von 9 fehlen',
     owner: 'kundschaft',
     bucket: 'woche',
     status: 'läuft automatisch',
@@ -529,7 +530,7 @@ export const deadlines: Deadline[] = [
     caseId: 'yildirim',
     when: 'Di 18.08.',
     title: 'Förderantrag KfW 458 einreichen',
-    detail: 'Feldstraße 9 · muss vor dem Handwerkertermin am 20.08. raus',
+    detail: 'muss vor dem Handwerkertermin am 20.08. raus',
     detailUrgent: true,
     owner: 'sie',
     bucket: 'woche',
@@ -539,8 +540,8 @@ export const deadlines: Deadline[] = [
     id: 'd-vorort',
     caseId: 'reuter',
     when: 'Mi 19.08. 10:00',
-    title: 'Vor-Ort-Termin Familie Reuter',
-    detail: 'Buchenweg 14 · Aufmaß, rund zwei Stunden',
+    title: 'Vor-Ort-Termin',
+    detail: 'Aufmaß, rund zwei Stunden',
     owner: 'gemeinsam',
     bucket: 'woche',
     status: 'steht im Kalender',
@@ -549,8 +550,8 @@ export const deadlines: Deadline[] = [
     id: 'd-ergebnis',
     caseId: 'petersen',
     when: 'Mi 19.08. 14:30',
-    title: 'Ergebnisgespräch Silke Petersen',
-    detail: 'Hauptstraße 41 · Briefing liegt bereit',
+    title: 'Ergebnisgespräch',
+    detail: 'Briefing liegt bereit',
     owner: 'gemeinsam',
     bucket: 'woche',
     status: 'steht im Kalender',
@@ -559,8 +560,8 @@ export const deadlines: Deadline[] = [
     id: 'd-kowalski',
     caseId: 'kowalski',
     when: 'Sa 22.08.',
-    title: 'Unterlagen Kowalski · Am Wall 27, 5 von 9 fehlen',
-    detail: '',
+    title: 'Unterlagen vollständig',
+    detail: '5 von 9 fehlen',
     owner: 'kundschaft',
     bucket: 'spaeter',
     status: 'seit 11 Tagen still',
@@ -569,7 +570,7 @@ export const deadlines: Deadline[] = [
     id: 'd-verwendung',
     caseId: 'petersen',
     when: 'Mi 02.09.',
-    title: 'Verwendungsnachweis Petersen · Hauptstraße 41',
+    title: 'Verwendungsnachweis',
     detail: '',
     owner: 'sie',
     bucket: 'spaeter',

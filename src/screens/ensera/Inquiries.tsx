@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useDemo } from '@/store/demo'
 import { listVariants, rowVariants, transition } from '@/motion/tokens'
-import { Button, Dot, Eyebrow, Switch } from '@/components/primitives'
+import { Button, Dot, Eyebrow } from '@/components/primitives'
 import { Orb } from '@/components/chrome/Orb'
 import { CheckIcon, EnvelopeIcon } from '@/icons'
 import type { Inquiry } from '@/store/types'
@@ -17,20 +17,20 @@ export function Inquiries() {
   const inquiries = useDemo((s) => s.inquiries)
   const selectedId = useDemo((s) => s.selectedInquiryId)
   const select = useDemo((s) => s.selectInquiry)
-  const autoAccept = useDemo((s) => s.autoAccept)
-  const setAutoAccept = useDemo((s) => s.setAutoAccept)
 
   const selected = inquiries.find((i) => i.id === selectedId) ?? inquiries[0]
-  const open = inquiries.filter((i) => i.state === 'neu').length
-  const done = inquiries.length - open
+  // Split rather than sort: „was habe ich schon entschieden" is the question
+  // the queue gets asked most, and a heading answers it faster than a badge.
+  const waiting = inquiries.filter((i) => i.state === 'neu')
+  const decided = inquiries.filter((i) => i.state !== 'neu')
 
   return (
     <div className="flex h-screen">
-      <section className="flex w-[400px] shrink-0 flex-col border-r border-border px-[20px] pt-[20px]">
+      <section className="flex w-[400px] shrink-0 flex-col border-r border-border px-[20px] pt-[20px] pb-lg">
         <header className="flex items-baseline justify-between pb-lg">
           <h1 className="font-display text-xl font-semibold tracking-tight">Anfragen</h1>
           <Eyebrow>
-            {open} NEU · {done} ERLEDIGT
+            {waiting.length} OFFEN · {decided.length} ENTSCHIEDEN
           </Eyebrow>
         </header>
 
@@ -41,7 +41,22 @@ export function Inquiries() {
           className="scroll-quiet -mx-[4px] flex flex-1 flex-col overflow-y-auto px-[4px]"
         >
           <AnimatePresence initial={false}>
-            {inquiries.map((inquiry) => (
+            {waiting.length > 0 && (
+              <GroupLabel key="h-offen">WARTET AUF SIE · {waiting.length}</GroupLabel>
+            )}
+            {waiting.map((inquiry) => (
+              <InquiryRow
+                key={inquiry.id}
+                inquiry={inquiry}
+                active={inquiry.id === selected?.id}
+                onSelect={() => select(inquiry.id)}
+              />
+            ))}
+
+            {decided.length > 0 && (
+              <GroupLabel key="h-entschieden">ENTSCHIEDEN · {decided.length}</GroupLabel>
+            )}
+            {decided.map((inquiry) => (
               <InquiryRow
                 key={inquiry.id}
                 inquiry={inquiry}
@@ -51,22 +66,22 @@ export function Inquiries() {
             ))}
           </AnimatePresence>
         </motion.div>
-
-        <footer className="border-t border-border py-lg">
-          <div className="flex items-center gap-sm pb-xs">
-            <Switch on={autoAccept} onChange={setAutoAccept} />
-            <span className="text-base text-fg">Passende Anfragen selbst annehmen</span>
-          </div>
-          <p className="text-sm leading-[21px] text-fg-muted">
-            {autoAccept
-              ? 'Ein: erfüllt eine Anfrage alle sechs Regeln, geht der Zugang ohne Sie raus — Sie sehen es im Protokoll.'
-              : 'Aus: jede Anfrage geht über Ihren Tisch. Ein: erfüllt eine Anfrage alle sechs Regeln, geht der Zugang ohne Sie raus — Sie sehen es im Protokoll.'}
-          </p>
-        </footer>
       </section>
 
       {selected && <InquiryDetail inquiry={selected} />}
     </div>
+  )
+}
+
+/** A heading inside the queue. Sticky, so it stays true while scrolling. */
+function GroupLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      layout
+      className="sticky top-0 z-10 -mx-[4px] bg-surface px-[4px] pt-md pb-xs first:pt-0"
+    >
+      <Eyebrow>{children}</Eyebrow>
+    </motion.div>
   )
 }
 
@@ -79,6 +94,8 @@ function InquiryRow({
   active: boolean
   onSelect: () => void
 }) {
+  const decided = inquiry.state !== 'neu'
+  const accepted = inquiry.state === 'angenommen'
   const tagTone =
     inquiry.tagState === 'neu'
       ? 'text-fg-muted'
@@ -107,9 +124,24 @@ function InquiryRow({
                      shadow-[0_1px_3px_rgba(18,22,27,0.07)]"
         />
       )}
+      {/* A decided row keeps a spine in the margin — accepted reads as brand,
+          the other two outcomes stay quiet. It survives the active fill because
+          the fill sits behind it. */}
+      {decided && (
+        <span
+          className={`absolute inset-y-[10px] left-0 w-[3px] rounded-full ${
+            accepted ? 'bg-brand' : 'bg-border-strong'
+          }`}
+        />
+      )}
       <span className="relative flex items-baseline justify-between gap-sm">
-        <span className={`text-base leading-[18px] ${active ? 'font-medium text-fg' : 'text-fg'}`}>
-          {inquiry.name}
+        <span className="flex min-w-0 items-baseline gap-sm">
+          <span
+            className={`truncate text-base leading-[18px] ${active ? 'font-medium text-fg' : 'text-fg'}`}
+          >
+            {inquiry.name}
+          </span>
+          {decided && <RowBadge state={inquiry.state} />}
         </span>
         <span className="label-caps shrink-0 text-fg-subtle">
           {inquiry.listDate}
@@ -126,6 +158,26 @@ function InquiryRow({
         {inquiry.tag}
       </span>
     </motion.button>
+  )
+}
+
+/** The outcome, said in one word next to the name. */
+function RowBadge({ state }: { state: Inquiry['state'] }) {
+  if (state === 'neu') return null
+  const styles = {
+    angenommen: 'bg-brand-surface text-brand',
+    abgelehnt: 'bg-surface-sunken text-fg-muted',
+    nachgefragt: 'bg-surface-sunken text-fg-muted',
+  }
+  const labels = {
+    angenommen: 'ANGENOMMEN',
+    abgelehnt: 'ABGESAGT',
+    nachgefragt: 'NACHGEFRAGT',
+  }
+  return (
+    <span className={`label-caps shrink-0 rounded-xs px-[5px] py-[3px] ${styles[state]}`}>
+      {labels[state]}
+    </span>
   )
 }
 

@@ -22,7 +22,7 @@ export function InquirySent() {
 
   return (
     <div className="flex min-h-screen flex-col bg-surface">
-      <HeldHeader variant="phone" />
+      <HeldHeader />
 
       <div className="flex flex-1 justify-center px-[80px] pt-[120px] pb-[96px]">
         <div className="w-full max-w-[720px]">
@@ -35,7 +35,6 @@ export function InquirySent() {
             <CheckIcon size={20} strokeWidth={1.8} />
           </motion.span>
 
-          <Eyebrow className="pb-md">ANFRAGE · SCHRITT 1 VON 3 ERLEDIGT</Eyebrow>
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

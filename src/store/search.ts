@@ -1,4 +1,5 @@
 import type { DemoState } from './demo'
+import type { Deadline } from './types'
 import * as seed from './seed'
 
 /*
@@ -138,7 +139,9 @@ export function search(state: DemoState, query: string): SearchResult[] {
         id: `d-${d.id}`,
         kind: 'frist',
         title: d.title,
-        detail: d.detail || d.status || '',
+        // The deadline itself no longer names anyone — „Vor-Ort-Termin" alone
+        // is not a search result, so the detail line has to carry the whose.
+        detail: [owner, d.detail || d.status].filter(Boolean).join(' · '),
         to: '/ensera/kalender',
         meta: d.when,
         urgent: d.overdue,
@@ -237,12 +240,12 @@ export function askPractice(state: DemoState, question: string): PracticeAnswer 
   if (/uberfallig|zu spat|verspatet|brennt/.test(q)) {
     return overdue.length
       ? {
-          text: `${up(count(overdue.length, 'Frist', 'Fristen'))} ${verb(overdue.length)} überfällig: ${list(overdue.map((d) => `${d.title} (${d.when})`))}.`,
+          text: `${up(count(overdue.length, 'Frist', 'Fristen'))} ${verb(overdue.length)} überfällig: ${list(overdue.map((d) => `${deadlineTitle(state, d)} (${d.when})`))}.`,
           provenance: 'AUS IHREM KALENDER',
           action: { label: 'Fristen öffnen', to: '/ensera/kalender' },
         }
       : {
-          text: `Nichts ist überfällig. Als Nächstes steht ${jetzt[0]?.title ?? 'diese Woche nichts Dringendes'} an.`,
+          text: `Nichts ist überfällig. Als Nächstes steht ${jetzt[0] ? deadlineTitle(state, jetzt[0]) : 'diese Woche nichts Dringendes'} an.`,
           provenance: 'AUS IHREM KALENDER',
           action: { label: 'Fristen öffnen', to: '/ensera/kalender' },
         }
@@ -251,7 +254,7 @@ export function askPractice(state: DemoState, question: string): PracticeAnswer 
   if (/heute|jetzt|als nachstes|nachstes/.test(q)) {
     return {
       text: jetzt.length
-        ? `Heute: ${list(jetzt.map((d) => `${d.title} (${d.when})`))}.`
+        ? `Heute: ${list(jetzt.map((d) => `${deadlineTitle(state, d)} (${d.when})`))}.`
         : 'Für heute steht nichts Dringendes an. Die nächste Frist ist ' + (state.deadlines[0]?.when ?? 'offen') + '.',
       provenance: `AUS IHREM KALENDER · ${seed.NOW}`,
       action: { label: 'Fristen öffnen', to: '/ensera/kalender' },
@@ -312,7 +315,7 @@ export function askPractice(state: DemoState, question: string): PracticeAnswer 
     const dates = state.deadlines.filter((d) => d.status === 'steht im Kalender')
     return {
       text: dates.length
-        ? `Feste Termine: ${list(dates.map((d) => `${d.title} (${d.when})`))}.`
+        ? `Feste Termine: ${list(dates.map((d) => `${deadlineTitle(state, d)} (${d.when})`))}.`
         : 'Im Kalender steht derzeit kein fester Termin.',
       provenance: 'AUS IHREM KALENDER',
       action: { label: 'Fristen öffnen', to: '/ensera/kalender' },
@@ -351,6 +354,16 @@ export function askPractice(state: DemoState, question: string): PracticeAnswer 
 
 function nameOf(state: DemoState, caseId: string): string {
   return state.clients.find((c) => c.id === caseId)?.name ?? caseId
+}
+
+/**
+ * „Vor-Ort-Termin · Familie Reuter". Deadline titles stopped naming anyone when
+ * the whose moved out of the row and into the case it points at, so anything
+ * quoting a deadline outside the Kalender has to put the name back.
+ */
+function deadlineTitle(state: DemoState, d: Deadline): string {
+  const who = d.caseId ? nameOf(state, d.caseId) : ''
+  return who ? `${d.title} · ${who}` : d.title
 }
 
 /** „zwei Mandate". Lowercase, because most uses are mid-sentence; see `up`. */

@@ -35,7 +35,7 @@ export function ClientPortal() {
         ? {
             kind: 'plain',
             title: 'Die Frage liegt bei Frau Held.',
-            detail: 'ENSERA hat sie nicht selbst beantwortet — dafür hängt zu viel daran.',
+            detail: 'Der KI-Assistent hat sie nicht selbst beantwortet — dafür hängt zu viel daran.',
             action: { label: 'Als Beraterin ansehen', to: '/ensera/fragen' },
           }
         : { kind: 'plain', title: 'Sofort beantwortet.', detail: 'Aus dem, was in Ihrem Fall liegt.' },
@@ -44,54 +44,50 @@ export function ClientPortal() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <HeldHeader
-        variant="portal"
-        address={`${kase.address}, Peine`}
-        person={kase.clientName}
-        onCall={() =>
-          pushToast({
-            kind: 'plain',
-            title: `${seed.consultant.phone}`,
-            detail: 'Meist erreichbar am selben Werktag.',
-          })
-        }
-      />
+      <HeldHeader variant="portal" address={`${kase.address}, Peine`} person={kase.clientName} />
 
-      {/* ── Stand heute */}
+      {/* ── Begrüßung. The headline greets; the line under it says what this
+          page is for, and each promise it makes links to where it is kept. */}
       <section className="flex justify-between gap-2xl px-[60px] pt-[68px] pb-2xl">
         <div className="max-w-[620px]">
-          <span className="label-caps flex items-center gap-xs pb-md text-fg-subtle">
-            <Dot state="erledigt" size={5} />
-            STAND HEUTE · {seed.TODAY.toUpperCase()}
-          </span>
-          <AnimatePresence mode="wait">
-            <motion.h1
-              key={kase.clientHeadline.title}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={transition.base}
-              className="pb-md font-display text-3xl font-semibold leading-[46px] tracking-tight"
-            >
-              {kase.clientHeadline.title}
-            </motion.h1>
-          </AnimatePresence>
-          <p className="text-md leading-[28px] text-fg-muted">{kase.clientHeadline.sub}</p>
+          <h1 className="pb-md font-display text-3xl font-semibold leading-[46px] tracking-tight">
+            Guten Tag, {kase.clientName}.
+          </h1>
+          <p className="text-md leading-[28px] text-fg-muted">
+            Hier sehen Sie <PortalLink to="stand">den aktuellen Stand Ihres Vorhabens</PortalLink>,{' '}
+            <PortalLink to="unterlagen">welche Unterlagen schon da sind</PortalLink> — und können{' '}
+            <PortalLink to="fragen">jederzeit Ihre Fragen stellen</PortalLink>.
+          </p>
         </div>
 
         <dl className="flex w-[300px] shrink-0 flex-col">
           <MetaRow label="FÖRDERUNG" value={kase.program} />
-          <MetaRow label="BEAUFTRAGT" value={kase.commissioned} />
-          <MetaRow label="IHRE BERATERIN" value={seed.consultant.name} last />
+          <MetaRow label="IHRE ENERGIEBERATERIN" value={seed.consultant.name} last />
         </dl>
       </section>
 
-      {/* ── Wer ist gerade dran */}
-      <section className="px-[60px] pb-[72px]">
-        <div className="flex items-baseline justify-between pb-md">
-          <Eyebrow>WER IST GERADE DRAN</Eyebrow>
+      {/* ── Wie es gerade steht */}
+      <section id="stand" className="scroll-mt-lg px-[60px] pb-[72px]">
+        <div className="flex items-baseline justify-between pb-xs">
+          <Eyebrow>WIE ES GERADE STEHT</Eyebrow>
           <Eyebrow>BEIDE SEITEN SEHEN DAS GLEICHE</Eyebrow>
         </div>
+
+        <AnimatePresence mode="wait">
+          <motion.h2
+            key={kase.clientHeadline.title}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={transition.base}
+            className="pb-xs font-display text-2xl font-semibold tracking-tight"
+          >
+            {kase.clientHeadline.title}
+          </motion.h2>
+        </AnimatePresence>
+        <p className="max-w-[620px] pb-lg text-base leading-[24px] text-fg-muted">
+          {kase.clientHeadline.sub}
+        </p>
 
         <div className="grid grid-cols-2 gap-lg">
           <YourSide docs={missing} />
@@ -100,7 +96,7 @@ export function ClientPortal() {
       </section>
 
       {/* ── Ablauf */}
-      <section className="bg-surface-sunken px-[60px] py-[72px]">
+      <section id="unterlagen" className="scroll-mt-lg bg-surface-sunken px-[60px] py-[72px]">
         <Eyebrow className="pb-sm">ABLAUF UND UNTERLAGEN</Eyebrow>
         <div className="flex items-end justify-between pb-lg">
           <h2 className="font-display text-2xl font-semibold tracking-tight">
@@ -121,13 +117,16 @@ export function ClientPortal() {
       </section>
 
       {/* ── Fragen */}
-      <section className="px-[60px] py-[72px]">
+      <section id="fragen" className="scroll-mt-lg px-[60px] py-[72px]">
         <Eyebrow className="pb-sm">IHRE FRAGEN</Eyebrow>
-        <div className="flex items-end justify-between pb-lg">
+        <div className="flex items-end justify-between gap-2xl pb-lg">
           <h2 className="font-display text-2xl font-semibold tracking-tight">
             Fragen Sie. Die meisten sind sofort beantwortet.
           </h2>
-          <p className="text-base text-fg-muted">Bei jeder Antwort steht, wer sie geschrieben hat.</p>
+          <p className="max-w-[430px] text-base leading-[22px] text-fg-muted">
+            Die meisten Fragen beantwortet Ihnen der KI-Assistent sofort aus Ihren Unterlagen. Geht
+            es tiefer, antwortet Frau Held Ihnen persönlich.
+          </p>
         </div>
 
         <div className="flex items-center gap-sm rounded-xl border border-border bg-surface px-lg py-sm
@@ -140,7 +139,6 @@ export function ClientPortal() {
             placeholder="Frage zu Ihrem Vorhaben …"
             className="h-[38px] flex-1 bg-transparent text-md text-fg placeholder:text-fg-subtle focus:outline-none"
           />
-          <Eyebrow>KI-SYSTEM · ANTWORTET NUR AUS IHREN UNTERLAGEN</Eyebrow>
           <motion.button
             type="button"
             onClick={onAsk}
@@ -195,6 +193,19 @@ export function ClientPortal() {
   )
 }
 
+/** An in-page link, styled as prose rather than as chrome. */
+function PortalLink({ to, children }: { to: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={`#${to}`}
+      className="text-fg underline decoration-border-strong underline-offset-[5px]
+                 transition-colors hover:decoration-fg"
+    >
+      {children}
+    </a>
+  )
+}
+
 function MetaRow({ label, value, last }: { label: string; value: string; last?: boolean }) {
   return (
     <div
@@ -218,7 +229,7 @@ function YourSide({ docs }: { docs: CaseDocument[] }) {
       <div className="flex items-baseline justify-between pb-md">
         <span className="label-caps flex items-center gap-xs text-fg">
           <Dot state={allDone ? 'erledigt' : 'fehlt'} size={5} />
-          {allDone ? 'SIE SIND DURCH' : 'SIE SIND DRAN'}
+          {allDone ? 'NICHTS MEHR OFFEN' : 'IHRE AUFGABEN'}
         </span>
         {!allDone && <Eyebrow tone="error">FRIST FR 15.08.</Eyebrow>}
       </div>
@@ -282,7 +293,7 @@ function HerSide({ kase }: { kase: Case }) {
       <div className="flex items-baseline justify-between pb-md">
         <span className="label-caps flex items-center gap-xs text-fg-muted">
           <Dot state="brand" size={5} />
-          FRAU HELD IST DRAN
+          FRAU HELD ARBEITET DARAN
         </span>
         <Eyebrow>SIE MÜSSEN NICHTS TUN</Eyebrow>
       </div>
@@ -320,7 +331,7 @@ function HerSide({ kase }: { kase: Case }) {
       <div className="mt-auto flex items-center gap-xs border-t border-border pt-md">
         <Orb size={18} />
         <p className="text-sm text-fg-muted">
-          Diese Zeile schreibt ENSERA automatisch mit — Frau Held muss nichts eintragen.
+          Diese Zeile schreibt der KI-Assistent automatisch mit — Frau Held muss nichts eintragen.
         </p>
       </div>
     </div>

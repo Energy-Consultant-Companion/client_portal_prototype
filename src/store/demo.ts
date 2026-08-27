@@ -51,7 +51,6 @@ export interface DemoState {
   slots: Slot[]
   appointments: Appointment[]
   toasts: Toast[]
-  autoAccept: boolean
   templates: WorkflowTemplate[]
 
   /** Which inquiry the consultant is reading. */
@@ -81,7 +80,6 @@ export interface DemoState {
   followUpInquiry(id: string): void
   releaseAnswer(questionId: string, body?: string[]): void
   resolveDeadline(id: string): void
-  setAutoAccept(on: boolean): void
 
   // ── Einrichtung
   selectTemplate(id: string): void
@@ -115,7 +113,6 @@ function initial() {
     slots: structuredClone(seed.slots),
     appointments: structuredClone(seed.appointments),
     toasts: [] as Toast[],
-    autoAccept: seed.autoAcceptDefault,
     templates: structuredClone(seed.workflowTemplates),
     selectedInquiryId: 'sander',
     selectedQuestionId: 'q-fenster',
@@ -531,17 +528,6 @@ export const useDemo = create<DemoState>((set, get) => ({
     if (d) {
       get().pushToast({ kind: 'plain', title: `Erledigt: ${d.title}` })
     }
-  },
-
-  setAutoAccept(on) {
-    set({ autoAccept: on })
-    get().pushToast({
-      kind: 'plain',
-      title: on ? 'Automatik ist an.' : 'Automatik ist aus.',
-      detail: on
-        ? 'Anfragen, die alle sechs Regeln erfüllen, bekommen den Zugang ohne Sie. Sie sehen es im Protokoll.'
-        : 'Jede Anfrage geht wieder über Ihren Tisch.',
-    })
   },
 
   // ───────────────────────────────────────────── Einrichtung

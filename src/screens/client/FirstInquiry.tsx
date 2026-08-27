@@ -7,7 +7,7 @@ import { Button, ChipGroup, Eyebrow, Field, TextArea } from '@/components/primit
 import { HeldHeader } from '@/components/chrome/HeldHeader'
 
 /*
- * Anfrage · Schritt 1 von 3.
+ * Die erste Anfrage.
  *
  * Three questions and a paragraph — deliberately short, because at this point
  * she only needs to know whether she can help at all. The left margin spends
@@ -36,11 +36,10 @@ export function FirstInquiry() {
 
   return (
     <div className="min-h-screen bg-surface">
-      <HeldHeader variant="phone" />
+      <HeldHeader />
 
       <div className="flex gap-[100px] px-[80px] pt-[80px] pb-[96px]">
         <aside className="flex w-[320px] shrink-0 flex-col">
-          <Eyebrow className="pb-md">ANFRAGE · SCHRITT 1 VON 3</Eyebrow>
           <h1 className="pb-md font-display text-3xl font-semibold leading-[44px] tracking-tight">
             Drei Fragen. Dann sind Sie erst mal durch.
           </h1>
