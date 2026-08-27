@@ -113,7 +113,7 @@ check('Erstgespräch steht in ihren Fristen', await seen('Erstgespräch Tobias S
 await shot('kalender')
 
 // ── 7. Upload a document as the client
-await go('kundschaft', 'Ihr Bereich')
+await go('kundschaft', 'Kundenportal (Zugang per Magic Link)')
 check('Vorher: zwei Unterlagen fehlen', await seen('Zwei Unterlagen fehlen. Sonst sind Sie durch.'))
 await page.getByRole('button', { name: 'Hochladen', exact: true }).first().click()
 check(
@@ -131,7 +131,7 @@ await go('beraterin', 'Kundschaft')
 check('Tabelle zeigt 8/9 für Reuter', await seen('8/9', { exact: true }))
 
 // ── 9. A simple question: answered on the spot
-await go('kundschaft', 'Ihr Bereich')
+await go('kundschaft', 'Kundenportal (Zugang per Magic Link)')
 const ask = page.getByPlaceholder('Frage zu Ihrem Vorhaben …')
 await ask.fill('Welche Unterlagen fehlen noch?')
 await ask.press('Enter')
@@ -164,7 +164,7 @@ await go('beraterin', 'Postfach')
 check('Protokoll hat die Antwort', await seen('Antwort: Können wir die Fenster'))
 await shot('postfach')
 
-await go('kundschaft', 'Ihr Bereich')
+await go('kundschaft', 'Kundenportal (Zugang per Magic Link)')
 await page.waitForTimeout(400)
 check(
   'Kundschaft sieht die freigegebene Antwort',

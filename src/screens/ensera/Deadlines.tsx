@@ -2,7 +2,7 @@ import { motion } from 'motion/react'
 import { useDemo, seed } from '@/store/demo'
 import { listVariants, rowVariants, transition } from '@/motion/tokens'
 import { Button, Dot, Eyebrow, OwnerTag } from '@/components/primitives'
-import type { Deadline } from '@/store/types'
+import type { Client, Deadline } from '@/store/types'
 
 /*
  * Fristen — what is actually due.
@@ -11,9 +11,18 @@ import type { Deadline } from '@/store/types'
  * in. „Jetzt" carries buttons; everything further out is deliberately passive,
  * with a status instead of an action, so the page can't nag about four things
  * at once.
+ *
+ * Rows and the column header share one template, so „WER IST DRAN" sits over
+ * the column it names instead of floating at the right edge of the group.
  */
+const COLUMNS = 'grid-cols-[148px_1fr_150px_170px]'
+
 export function Deadlines() {
   const deadlines = useDemo((s) => s.deadlines)
+  const clients = useDemo((s) => s.clients)
+  // Each row is about a person, not an address — so it says who, read from the
+  // one place their name is stored.
+  const names = Object.fromEntries(clients.map((c: Client) => [c.id, c.name]))
   const buckets = {
     jetzt: deadlines.filter((d) => d.bucket === 'jetzt'),
     woche: deadlines.filter((d) => d.bucket === 'woche'),
@@ -42,9 +51,9 @@ export function Deadlines() {
           </div>
         </header>
 
-        <Group title="JETZT" rows={buckets.jetzt} showOwnerHeader />
-        <Group title="DIESE WOCHE" rows={buckets.woche} />
-        <Group title="SPÄTER" rows={buckets.spaeter} />
+        <Group title="JETZT" rows={buckets.jetzt} names={names} showOwnerHeader />
+        <Group title="DIESE WOCHE" rows={buckets.woche} names={names} />
+        <Group title="SPÄTER" rows={buckets.spaeter} names={names} />
 
         <motion.div
           initial={{ opacity: 0, y: 8 }}
@@ -80,38 +89,41 @@ function headline(pressing: number, thisWeek: number): string {
 function Group({
   title,
   rows,
+  names,
   showOwnerHeader,
 }: {
   title: string
   rows: Deadline[]
+  names: Record<string, string>
   showOwnerHeader?: boolean
 }) {
   if (!rows.length) return null
   return (
     <section className="pt-md first:pt-0">
-      <div className="flex items-baseline justify-between pb-xs">
-        <Eyebrow>{title}</Eyebrow>
+      <div className={`grid ${COLUMNS} items-baseline gap-lg pb-xs`}>
+        <Eyebrow className="col-span-2">{title}</Eyebrow>
         {showOwnerHeader && <Eyebrow>WER IST DRAN</Eyebrow>}
       </div>
       <div className="h-px w-full bg-border" />
       <motion.div variants={listVariants} initial="initial" animate="animate">
         {rows.map((d) => (
-          <Row key={d.id} deadline={d} />
+          <Row key={d.id} deadline={d} who={d.caseId ? names[d.caseId] : undefined} />
         ))}
       </motion.div>
     </section>
   )
 }
 
-function Row({ deadline: d }: { deadline: Deadline }) {
+function Row({ deadline: d, who }: { deadline: Deadline; who?: string }) {
   const resolve = useDemo((s) => s.resolveDeadline)
+  const subline = [who, d.detail].filter(Boolean).join(' · ')
 
   return (
     <motion.div
       variants={rowVariants}
       layout
       exit={{ opacity: 0, height: 0, transition: transition.exit }}
-      className="grid grid-cols-[148px_1fr_150px_170px] items-center gap-lg border-b border-border-subtle py-[13px]"
+      className={`grid ${COLUMNS} items-center gap-lg border-b border-border-subtle py-[13px]`}
     >
       <span className="flex flex-col gap-[2px]">
         <span className={`numeric-mono text-sm ${d.overdue ? 'text-feedback-error' : 'text-fg'}`}>
@@ -126,14 +138,14 @@ function Row({ deadline: d }: { deadline: Deadline }) {
 
       <span className="flex min-w-0 flex-col gap-[3px]">
         <span className="text-md font-medium leading-[22px] text-fg">{d.title}</span>
-        {d.detail && (
+        {subline && (
           <span
             className={`flex items-center gap-[6px] text-sm ${
               d.detailUrgent ? 'text-feedback-error' : 'text-fg-muted'
             }`}
           >
             {d.detailUrgent && <Dot state="fehlt" size={5} />}
-            {d.detail}
+            {subline}
           </span>
         )}
       </span>

@@ -26,7 +26,7 @@ export interface Escalation {
   }
 }
 
-const PROVENANCE_INSTANT = 'ENSERA · SOFORT BEANTWORTET, OHNE FRAU HELD ZU STÖREN'
+const PROVENANCE_INSTANT = 'KI-ASSISTENT · SOFORT BEANTWORTET, OHNE FRAU HELD ZU STÖREN'
 
 /** Things ENSERA can read straight off the case. */
 const answerable: { match: RegExp; answer: string }[] = [

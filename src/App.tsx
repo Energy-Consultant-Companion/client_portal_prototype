@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useOutlet } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { CommandPalette } from '@/components/chrome/CommandPalette'
 import { EnseraRail } from '@/components/chrome/EnseraRail'
@@ -24,13 +24,34 @@ import { Setup } from '@/screens/ensera/Setup'
  * The consultant shell. The rail lives outside the animated region so its
  * badges stay put while the content crossfades — watching a count tick over
  * during a route change is the whole reason it's there.
+ *
+ * Which means the crossfade has to happen *here*, around the outlet, not around
+ * the whole `<Routes>` upstairs: keying that on the full pathname tore the rail
+ * down and rebuilt it on every tab, and a rail that replays its width animation
+ * every time you click „Kundschaft" reads as a flicker.
  */
 function EnseraShell() {
+  const { pathname } = useLocation()
+  // The element, not <Outlet />: AnimatePresence keeps the exiting child's
+  // props, so the outgoing screen keeps rendering itself on the way out
+  // instead of swapping to the incoming one mid-fade.
+  const outlet = useOutlet()
+
   return (
     <div className="flex min-h-screen w-full bg-surface">
       <EnseraRail />
       <main className="min-w-0 flex-1">
-        <Outlet />
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={pathname}
+            variants={routeVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            {outlet}
+          </motion.div>
+        </AnimatePresence>
       </main>
       <CommandPalette />
     </div>
@@ -48,11 +69,14 @@ function Animated({ children }: { children: React.ReactNode }) {
 
 export function App() {
   const location = useLocation()
+  // One key for the whole consultant side, so the shell — and with it the rail
+  // and its counts — survives every move between its tabs.
+  const routeKey = location.pathname.startsWith('/ensera') ? '/ensera' : location.pathname
 
   return (
     <>
       <AnimatePresence mode="wait" initial={false}>
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location} key={routeKey}>
           {/* Kundschaft */}
           <Route
             path="/"

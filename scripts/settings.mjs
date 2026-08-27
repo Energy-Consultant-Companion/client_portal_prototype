@@ -83,7 +83,9 @@ await page.waitForTimeout(400)
 check('Findet Kundschaft nach Name', await seen('Hans-Jürgen Brendel'))
 // A name has to reach everything of that client's, not just rows spelling it out.
 check('Findet auch seine Fristen', await seen('Antwort an die BAFA freigeben'))
-check('Und seinen Rückruf', await seen('Rückruf Hans-Jürgen Brendel'))
+// The deadline is titled just „Rückruf" now — the name lives on its case, and
+// the result's detail line is what puts it back.
+check('Und seinen Rückruf', await seen('Rückruf', { exact: true }))
 await shot('palette-brendel')
 await page.keyboard.press('Escape')
 await page.waitForTimeout(400)

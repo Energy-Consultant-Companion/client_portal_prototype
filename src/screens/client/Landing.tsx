@@ -78,19 +78,11 @@ export function Landing() {
             <span className="flex size-[22px] items-center justify-center rounded-sm bg-surface">
               <span className="block size-2 rounded-full bg-fg" />
             </span>
-            <span className="flex flex-col">
-              <span className="font-display text-base font-semibold tracking-tight text-fg-inverse">
-                {seed.consultant.practice}
-              </span>
-              <span className="label-caps text-[9px] text-[rgba(255,255,255,0.55)]">
-                {seed.consultant.registry}
-              </span>
+            <span className="font-display text-base font-semibold tracking-tight text-fg-inverse">
+              {seed.consultant.practice}
             </span>
           </span>
           <span className="flex items-center gap-lg">
-            <span className="numeric-mono text-sm text-[rgba(255,255,255,0.78)]">
-              {seed.consultant.phone}
-            </span>
             <Link
               to="/anfrage"
               className="rounded-full border border-[rgba(255,255,255,0.3)] px-md py-[9px] text-sm
@@ -102,42 +94,30 @@ export function Landing() {
         </nav>
 
         <div className="relative flex h-[790px] flex-col justify-end px-[80px] pb-[92px]">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transition.slow, delay: 0.2 }}
-            className="flex items-center gap-[10px] pb-[28px]"
-          >
-            <span className="size-[6px] shrink-0 rounded-full bg-brand-inverse" />
-            <span className="label-caps text-[rgba(255,255,255,0.86)]">
-              ENERGIEBERATUNG FÜR WOHNGEBÄUDE · 40 KM UM PEINE
-            </span>
-          </motion.div>
-
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transition.slow, delay: 0.28 }}
-            className="w-[540px] font-display text-[62px] font-semibold leading-[60px] tracking-tighter text-fg-inverse
+            transition={{ ...transition.slow, delay: 0.2 }}
+            className="w-[620px] font-display text-[62px] font-semibold leading-[60px] tracking-tighter text-fg-inverse
                        [text-shadow:0_1px_24px_rgba(11,13,16,0.35)]"
           >
-            Ich sage Ihnen, was Ihr Haus braucht. Und was nicht.
+            Energieberatung Held im Umkreis von Münster
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transition.slow, delay: 0.36 }}
+            transition={{ ...transition.slow, delay: 0.28 }}
             className="w-[560px] pt-lg text-md leading-[29px] text-[rgba(255,255,255,0.88)]"
           >
-            Sanierungsfahrplan, Förderantrag, Begleitung bis zum Bescheid. Und wenn sich etwas für
-            Sie nicht rechnet, sage ich das, bevor Sie Geld ausgeben.
+            Begleitung Ihrer Renovierung — vom Sanierungsfahrplan (iSFP) bis zum Förderantrag
+            (BAFA, KfW).
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ ...transition.slow, delay: 0.44 }}
+            transition={{ ...transition.slow, delay: 0.36 }}
             className="flex items-center gap-[20px] pt-[40px]"
           >
             {/* The one element that belongs to ENSERA — hence the ring on it. */}
@@ -154,11 +134,6 @@ export function Landing() {
                 <ArrowRightIcon size={15} />
               </motion.span>
             </Link>
-            <span className="label-caps leading-[18px] text-[rgba(255,255,255,0.62)]">
-              DREI FRAGEN · ZWEI MINUTEN
-              <br />
-              ANTWORT VON MIR AM SELBEN WERKTAG
-            </span>
           </motion.div>
         </div>
       </section>

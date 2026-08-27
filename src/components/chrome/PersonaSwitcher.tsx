@@ -13,10 +13,10 @@ import { Eyebrow } from '@/components/primitives'
 
 const stops = {
   kundschaft: [
-    { to: '/', label: 'Landing' },
-    { to: '/anfrage', label: 'Anfrage stellen' },
-    { to: '/aufnahme', label: 'Aufnahme' },
-    { to: '/bereich', label: 'Ihr Bereich' },
+    { to: '/', label: 'Ihre eigene Website' },
+    { to: '/anfrage', label: 'Erstanfrage neue Kundschaft' },
+    { to: '/aufnahme', label: 'Onboarding' },
+    { to: '/bereich', label: 'Kundenportal (Zugang per Magic Link)' },
   ],
   beraterin: [
     { to: '/ensera/anfragen', label: 'Anfragen' },
@@ -48,7 +48,7 @@ export function PersonaSwitcher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.98, transition: transition.exit }}
             transition={transition.base}
-            className="w-[248px] overflow-hidden rounded-xl border border-border bg-surface
+            className="w-[300px] overflow-hidden rounded-xl border border-border bg-surface
                        shadow-[0_16px_40px_rgba(18,22,27,0.14)]"
           >
             {(['kundschaft', 'beraterin'] as const).map((persona) => (

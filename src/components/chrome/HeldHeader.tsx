@@ -1,26 +1,23 @@
 import { Link } from 'react-router-dom'
 import { seed } from '@/store/demo'
 import { HeldMark, CheckIcon } from '@/icons'
-import { Button } from '@/components/primitives'
 
 /*
  * The client-facing header. It changes register as the relationship deepens:
- * a phone number for a stranger on the landing page, an address and an autosave
- * clock once they are inside their own case.
+ * bare on the way in, an address and an autosave clock once they are inside
+ * their own case.
  */
 
 export function HeldHeader({
   /** Shown after the wordmark once we know which house this is about. */
   address,
-  /** Right side: a phone number, an autosave state, or a named person. */
-  variant = 'phone',
+  /** Right side: an autosave state, a named person, or nothing at all. */
+  variant = 'plain',
   person,
-  onCall,
 }: {
   address?: string
-  variant?: 'phone' | 'saved' | 'portal' | 'plain'
+  variant?: 'saved' | 'portal' | 'plain'
   person?: string
-  onCall?: () => void
 }) {
   return (
     <header className="flex h-[72px] shrink-0 items-center justify-between border-b border-border bg-surface px-2xl">
@@ -39,10 +36,6 @@ export function HeldHeader({
         )}
       </Link>
 
-      {variant === 'phone' && (
-        <span className="text-sm text-fg-muted">Lieber telefonieren? {seed.consultant.phone}</span>
-      )}
-
       {variant === 'saved' && (
         <span className="flex items-center gap-lg">
           <span className="label-caps flex items-center gap-[6px] text-fg-subtle">
@@ -53,14 +46,7 @@ export function HeldHeader({
         </span>
       )}
 
-      {variant === 'portal' && (
-        <span className="flex items-center gap-lg">
-          <span className="text-sm text-fg-muted">{person}</span>
-          <Button variant="secondary" size="sm" onClick={onCall}>
-            Frau Held anrufen
-          </Button>
-        </span>
-      )}
+      {variant === 'portal' && <span className="text-sm text-fg-muted">{person}</span>}
     </header>
   )
 }
